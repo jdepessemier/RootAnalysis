@@ -95,7 +95,10 @@ public class Analysis {
 				sheet.addCell(new Label(4, 0, "LPR   ", headerInformationFormat));
 				sheet.addCell(new Label(5, 0, "NLR   ", headerInformationFormat));		
 				sheet.addCell(new Label(6, 0, "SLRL   ", headerInformationFormat));
-				sheet.addCell(new Label(7, 0, "DLRZ2", headerInformationFormat));
+				sheet.addCell(new Label(7, 0, "Mean LRL   ", headerInformationFormat));
+				sheet.addCell(new Label(8, 0, "DLRZ1", headerInformationFormat));
+				sheet.addCell(new Label(9, 0, "Length P1 Plast", headerInformationFormat));
+				sheet.addCell(new Label(10, 0, "DLRZ2", headerInformationFormat));
 			} catch (RowsExceededException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -115,7 +118,10 @@ public class Analysis {
 						sheet.addCell(new Number(4, l+offset,accessionsList.get(j).getLPR(l),cf2 ));
 						sheet.addCell(new Number(5, l+offset,accessionsList.get(j).getNLR(l),cf2 ));
 						sheet.addCell(new Number(6, l+offset,accessionsList.get(j).getSLRL(l),cf2 ));
-						sheet.addCell(new Number(7, l+offset,accessionsList.get(j).getDLRZ2(l),cf2 ));	
+						sheet.addCell(new Number(7, l+offset,accessionsList.get(j).getMeanLRL(l),cf2 ));
+						sheet.addCell(new Number(8, l+offset,accessionsList.get(j).getDLRZ1(l),cf2 ));
+						sheet.addCell(new Number(9, l+offset,accessionsList.get(j).getP1_Plast(l),cf2 ));
+						sheet.addCell(new Number(10, l+offset,accessionsList.get(j).getDLRZ2(l),cf2 ));	
 					}													    				
 					delta = accessionsList.get(j).getN();
 				}
@@ -249,6 +255,8 @@ public class Analysis {
 			    Double[] lengthOfPrimaryRoot = new Double[nbOfPlants];
 				int[] nbOfLateralRoots = new int[nbOfPlants];
 				Double[] sumOfLateralRootsLength = new Double[nbOfPlants];
+				Double[] meanOfLateralRootsLength = new Double[nbOfPlants];
+				Double[] densityOfLateralRootsZ1 = new Double[nbOfPlants];
 				Double[] densityOfLateralRootsZ2 = new Double[nbOfPlants];
 				Double rootDeltaLength = 1.0;
 			    
@@ -355,7 +363,25 @@ public class Analysis {
 				    sumOfLateralRootsLength[i]=lateralRootsLenghSum;
 				    currentAccession.setSLRL(sumOfLateralRootsLength[i],i);
 				    //System.out.println(roundDouble(sumOfLatRootsLength[i]));
-
+				    
+				    // Save the mean Lateral roots length
+				    if (nbOfLateralRoots[i] == 0) {
+				    	meanOfLateralRootsLength[i] = 0.00;
+				    	currentAccession.setMeanLRL(meanOfLateralRootsLength[i],i);
+				    } else {
+					    meanOfLateralRootsLength[i] = sumOfLateralRootsLength[i]/nbOfLateralRoots[i];
+					    currentAccession.setMeanLRL(meanOfLateralRootsLength[i],i);
+					    //System.out.println(roundDouble(meanOfLateralRootsLength[i]));
+				    }
+				    
+				    // Save the density of lateral roots (Zone1)
+				    densityOfLateralRootsZ1[i] = nbOfLateralRoots[i]/lengthOfPrimaryRoot[i];
+				    currentAccession.setDLRZ1(densityOfLateralRootsZ1[i],i);
+				    //System.out.println(roundDouble(densityOfLateralRootsZ1[i]));
+				    
+				    // Save the length between first and last lateral roots positions
+				    currentAccession.setP1_Plast(rootDeltaLength, i);
+				    
 				    // Save the density of lateral roots (Zone2)
 				    //System.out.println(nbOfLateralRoots[i]);
 				    if (nbOfLateralRoots[i] == 0) {
@@ -368,7 +394,7 @@ public class Analysis {
 				    	densityOfLateralRootsZ2[i] = nbOfLateralRoots[i]/rootDeltaLength;
 				    	currentAccession.setDLRZ2(densityOfLateralRootsZ2[i],i);
 				    }
-				    //System.out.println(rootsDensity[i]);
+				    //System.out.println(densityOfLateralRootsZ2[i]);
 				    
 				    // Skip 3 blank lines before the next root
 				    dis.readLine();

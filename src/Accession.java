@@ -7,6 +7,8 @@ public class Accession {
 	private Double[] LPR = new Double[5];   // Array of Length of Primary Roots
 	private int[]    NLR = new int[5];      // Array of Number of Lateral Roots (>1mm)
 	private Double[] SLRL = new Double[5];  // Array of Sum of Lateral Roots Length
+	private Double[] meanLRL = new Double[5];  // Array of mean Lateral Roots Length
+	private Double[] P1_Plast = new Double[5];  // Array of Length between first and last Lateral Roots positions
 	private Double[] DLRZ1 = new Double[5]; // Array of Density of Lateral Roots (Z1)
 	private Double[] DLRZ2 = new Double[5]; // Array of Density of Lateral Roots (Z2)
 	
@@ -25,10 +27,10 @@ public class Accession {
 	private Double SLRLsd;
 	private Double SLRLse;
 	
-	// Lateral Roots Length (LRL) mean, standard deviation, and standard error
-	private Double LRLmean;
-	private Double LRLsd;
-	private Double LRLse;
+	// Mean Lateral Roots Length (LRL) mean, standard deviation, and standard error
+	private Double meanLRLmean;
+	private Double meanLRLsd;
+	private Double meanLRLse;
 	
 	// Density Lateral Roots Zone 1 (DLRZ1) mean, standard deviation, and standard error
 	private Double DLRZ1mean;
@@ -50,7 +52,9 @@ public class Accession {
 			LPR[i] = 0.00;
 			NLR[i] = 0;
 			SLRL[i] = 0.00;
+			meanLRL[i] = 0.00;
 			DLRZ1[i] = 0.00;
+			P1_Plast[i] = 0.00;
 			DLRZ2[i] = 0.00;
 		}
 		
@@ -63,9 +67,9 @@ public class Accession {
 		SLRLmean = 0.00;
 		SLRLsd = 0.00;
 		SLRLse = 0.00;	
-		LRLmean = 0.00;
-		LRLsd = 0.00;
-		LRLse = 0.00;
+		meanLRLmean = 0.00;
+		meanLRLsd = 0.00;
+		meanLRLse = 0.00;
 		DLRZ1mean = 0.00;
 		DLRZ1sd = 0.00;
 		DLRZ1se = 0.00;
@@ -81,7 +85,9 @@ public class Accession {
 					 Double[] lpr,
 					 int[] nlr,
 					 Double[] slrl,
+					 Double[] meanlrl,
 					 Double[] dlrz1,
+					 Double[] p1_plast,
 					 Double[] dlrz2,
 					 Double lprmean,
 					 Double lprsd,
@@ -92,9 +98,9 @@ public class Accession {
 					 Double slrlmean,
 					 Double slrlsd,
 					 Double slrlse,
-					 Double lrlmean,
-					 Double lrlsd,
-					 Double lrlse,
+					 Double meanlrlmean,
+					 Double meanlrlsd,
+					 Double meanlrlse,
 					 Double dlrz1mean,
 					 Double dlrz1sd,
 					 Double dlrz1se,
@@ -108,7 +114,9 @@ public class Accession {
 		this.LPR = lpr;
 		this.NLR = nlr;
 		this.SLRL = slrl;
+		this.meanLRL = meanlrl;
 		this.DLRZ1 = dlrz1;
+		this.P1_Plast = p1_plast;
 		this.DLRZ2 = dlrz2;
 		this.LPRmean = lprmean;
 		this.LPRsd = lprsd;
@@ -119,9 +127,9 @@ public class Accession {
 		this.SLRLmean = slrlmean;
 		this.SLRLsd = slrlsd;
 		this.SLRLse = slrlse;
-		this.LRLmean = lrlmean;
-		this.LRLsd = lrlsd;
-		this.LRLse = lrlse;
+		this.meanLRLmean = meanlrlmean;
+		this.meanLRLsd = meanlrlsd;
+		this.meanLRLse = meanlrlse;
 		this.DLRZ1mean = dlrz1mean;
 		this.DLRZ1sd = dlrz1sd;
 		this.DLRZ1se = dlrz1se;
@@ -200,6 +208,16 @@ public class Accession {
 		SLRL[idx] = value;
 	}
 
+	// Mean LRL
+	
+	public Double getMeanLRL(int idx) {
+		return meanLRL[idx];
+	}
+
+	public void setMeanLRL(double value, int idx) {
+		meanLRL[idx] = value;
+	}
+	
 	// DLRZ1
 	
 	public Double getDLRZ1(int idx) {
@@ -208,6 +226,16 @@ public class Accession {
 
 	public void setDLRZ1(double value, int idx) {
 		DLRZ1[idx] = value;
+	}
+	
+	// P1_Plast
+	
+	public Double getP1_Plast(int idx) {
+		return P1_Plast[idx];
+	}
+
+	public void setP1_Plast(double value, int idx) {
+		P1_Plast[idx] = value;
 	}
 	
 	// DLRZ2
@@ -298,30 +326,30 @@ public class Accession {
 		SLRLse = value;
 	}
 
-	// LRL mean, sd, se
+	// Mean LRL mean, sd, se
 	
-	public Double getLRLmean() {
-		return LRLmean;
+	public Double getMeanLRLmean() {
+		return meanLRLmean;
 	}
 
-	public void setLRLmean(Double value) {
-		LRLmean = value;
+	public void setMeanLRLmean(Double value) {
+		meanLRLmean = value;
 	}
 
-	public Double getLRLsd() {
-		return LRLsd;
+	public Double getMeanLRLsd() {
+		return meanLRLsd;
 	}
 
-	public void setLRLsd(Double value) {
-		LRLsd = value;
+	public void setMeanLRLsd(Double value) {
+		meanLRLsd = value;
 	}
 
-	public Double getLRLse() {
-		return LRLse;
+	public Double getMeanLRLse() {
+		return meanLRLse;
 	}
 
-	public void setLRLse(Double value) {
-		LRLse = value;
+	public void setMeanLRLse(Double value) {
+		meanLRLse = value;
 	}
 	
 	// DLRZ1 mean, sd, se
