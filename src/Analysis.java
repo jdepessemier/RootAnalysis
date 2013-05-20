@@ -95,7 +95,7 @@ public class Analysis {
 				sheet.addCell(new Label(4, 0, "LPR   ", headerInformationFormat));
 				sheet.addCell(new Label(5, 0, "NLR   ", headerInformationFormat));		
 				sheet.addCell(new Label(6, 0, "SLRL   ", headerInformationFormat));
-				sheet.addCell(new Label(7, 0, "DLRZ1", headerInformationFormat));
+				sheet.addCell(new Label(7, 0, "DLRZ2", headerInformationFormat));
 			} catch (RowsExceededException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -115,7 +115,7 @@ public class Analysis {
 						sheet.addCell(new Number(4, l+offset,accessionsList.get(j).getLPR(l),cf2 ));
 						sheet.addCell(new Number(5, l+offset,accessionsList.get(j).getNLR(l),cf2 ));
 						sheet.addCell(new Number(6, l+offset,accessionsList.get(j).getSLRL(l),cf2 ));
-						sheet.addCell(new Number(7, l+offset,accessionsList.get(j).getDLRZ1(l),cf2 ));	
+						sheet.addCell(new Number(7, l+offset,accessionsList.get(j).getDLRZ2(l),cf2 ));	
 					}													    				
 					delta = accessionsList.get(j).getN();
 				}
@@ -362,7 +362,7 @@ public class Analysis {
 				    	densityOfLateralRootsZ2[i] = 0.00; // There are no lateral roots
 				    	currentAccession.setDLRZ2(densityOfLateralRootsZ2[i],i);
 				    } else if (nbOfLateralRoots[i] == 1) {
-				    	densityOfLateralRootsZ2[i] = 1/densityOfLateralRootsZ2[i]; // Only one lateral root
+				    	densityOfLateralRootsZ2[i] = 1/lengthOfPrimaryRoot[i]; // Only one lateral root
 				    	currentAccession.setDLRZ2(densityOfLateralRootsZ2[i],i);
 				    } else {
 				    	densityOfLateralRootsZ2[i] = nbOfLateralRoots[i]/rootDeltaLength;
