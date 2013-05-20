@@ -26,9 +26,7 @@ public class Analysis {
 	public static void main(String[] args) throws IOException {
 		
 		// Setup the root and the main directory
-		// Change this for your own files location
-		// Setup the minimal lateral roots length, below this value we do not consider the lateral or
-		// secondary root
+		// Setup the minimal lateral roots length, below this value we do not consider the lateral or secondary roots
 		
 		String root = "C:";
 		String workDir = "W_2012_03_22-08";
@@ -53,22 +51,22 @@ public class Analysis {
 		} else {
 		    for (int i=0; i<children.length; i++) { // Loop in the directory for the files to be treated
 
-		    	// Extract the accession name out of the file name
+		    	// Extract the accession name out of the file name ------------------------------------------------------
 		    	int pointIndex = children[i].indexOf(".");
 			    String accession = children[i].substring(0, pointIndex);
 			    //System.out.println(accession);
 			    
-			    // Build the different file names
+			    // Build the different file names -----------------------------------------------------------------------
 			    String inputFileName = inputDir+accession+".bmp.txt";
 			    //String inputFileName = inputDir+accession+".txt";
 				String cleanupFileName = cleanupDir+accession+".txt";
 				String outputFileName = outputDir+accession+".csv";
 				
-				// Clean up the input file and store it
+				// Clean up the input file and store it -----------------------------------------------------------------
 				File inFile = new File(inputFileName);
 				cleanup(inFile,cleanupFileName);
 				
-				// Parse the file we have cleaned up to extract the required data
+				// Parse the file we have cleaned up to extract the required data ---------------------------------------
 				// Build a .csv file for each accession containing the extracted data
 				inFile = new File(cleanupFileName);
 				Accession myAccession = new Accession();
@@ -77,7 +75,7 @@ public class Analysis {
 			    accessionsList.add(myAccession);			    
 		    }		    
 			
-		    // Write final file #1 
+		    // Write file Accession.xls ----------------------------------------------------------------------------------
 		    String outFileName = finalDir+"Accessions.xls";
 		    
 			WritableWorkbook workbook = Workbook.createWorkbook(new File(outFileName));
@@ -94,10 +92,10 @@ public class Analysis {
 				sheet.addCell(new Label(1, 0, "Concentration", headerInformationFormat));
 				sheet.addCell(new Label(2, 0, "Day", headerInformationFormat));
 				sheet.addCell(new Label(3, 0, "Box  ", headerInformationFormat));
-				sheet.addCell(new Label(4, 0, "MRL   ", headerInformationFormat));
+				sheet.addCell(new Label(4, 0, "LPR   ", headerInformationFormat));
 				sheet.addCell(new Label(5, 0, "NLR   ", headerInformationFormat));		
-				sheet.addCell(new Label(6, 0, "LRL   ", headerInformationFormat));
-				sheet.addCell(new Label(7, 0, "R Density", headerInformationFormat));
+				sheet.addCell(new Label(6, 0, "SLRL   ", headerInformationFormat));
+				sheet.addCell(new Label(7, 0, "DLRZ1", headerInformationFormat));
 			} catch (RowsExceededException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -105,47 +103,42 @@ public class Analysis {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 			try {
 				int delta = 0;
 				int offset = 1; 
 				for (int j = 0; j < accessionsList.size(); j++ ){
 					offset = offset + delta;
-					for (int l = 0; l < accessionsList.get(j).getNbOfPlants(); l++ ){
+					for (int l = 0; l < accessionsList.get(j).getN(); l++ ){
 						sheet.addCell(new Label(0, l+offset, accessionsList.get(j).getName(), InformationFormat));
 						sheet.addCell(new Label(1, l+offset, accessionsList.get(j).getConcentration(), InformationFormat));
 						sheet.addCell(new Label(3, l+offset, accessionsList.get(j).getBox(), InformationFormat));
-						sheet.addCell(new Number(4, l+offset,accessionsList.get(j).getMRL(l),cf2 ));
+						sheet.addCell(new Number(4, l+offset,accessionsList.get(j).getLPR(l),cf2 ));
 						sheet.addCell(new Number(5, l+offset,accessionsList.get(j).getNLR(l),cf2 ));
 						sheet.addCell(new Number(6, l+offset,accessionsList.get(j).getSLRL(l),cf2 ));
-						sheet.addCell(new Number(7, l+offset,accessionsList.get(j).getRD(l),cf2 ));	
-					}
-																	    				
-					delta = accessionsList.get(j).getNbOfPlants();
+						sheet.addCell(new Number(7, l+offset,accessionsList.get(j).getDLRZ1(l),cf2 ));	
+					}													    				
+					delta = accessionsList.get(j).getN();
 				}
-				
 				int c = sheet.getColumns();
 				for(int x=0;x<c;x++)
 				{
 				    CellView cell = sheet.getColumnView(x);
 				    cell.setAutosize(true);
 				    sheet.setColumnView(x, cell);
-				}
-				
+				}	
 				workbook.write();
 				workbook.close();
-
 			} catch (RowsExceededException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (WriteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-		    	    
+			}  
 		}				
 	}
 
+	//--------------------------------------------------------------------------------------------------------------------
 	public static void cleanup(File infile,String cleanupfilename){
 		
 		FileInputStream fis = null;
@@ -182,6 +175,7 @@ public class Analysis {
 		}
 	}
 
+	//--------------------------------------------------------------------------------------------------------------------
 	public static Accession parse(File infile,String outputfilename, Double minlateralrootlength){
 		
 		FileInputStream fis = null;
@@ -194,7 +188,7 @@ public class Analysis {
 		String experimentName; // should be empty
 		String boxName; // should contain a letter for the box name
 		String genotype; // used to store the accession name
-		String media; // used to store the concentration
+		String media; // used to store the concentration (10mm or 10µM)
 		int nbOfPlants; // self explanatory
 
 	    Accession currentAccession = new Accession();
@@ -208,37 +202,36 @@ public class Analysis {
 		    while (dis.available() != 0) {
 		    	
 		    	String line = dis.readLine();
-		    	fileName = getStringLineItem(line,1,";");
+		    	fileName = getStringLineItem(line,1,";"); // get filename in the file
 		    	
 			    line = dis.readLine();
-			    userName = getStringLineItem(line,1,";");
+			    userName = getStringLineItem(line,1,";"); // get username in the file
 			    
 			    line = dis.readLine();
-			    experimentName = getStringLineItem(line,1,";");
+			    experimentName = getStringLineItem(line,1,";"); // get experiment name in the file
 		    			    				    
 			    line = dis.readLine();
-			    boxName = getStringLineItem(line,1,";");
-			    currentAccession.setBox(boxName);
+			    boxName = getStringLineItem(line,1,";"); // get box name (A,B, ...) in the file
+			    currentAccession.setBox(boxName); // store it 
 			     
 			    line = dis.readLine();
-			    genotype = getStringLineItem(line,1,";");
-			
-			    currentAccession.setName(genotype);
+			    genotype = getStringLineItem(line,1,";"); // get accession name in the file
+			    currentAccession.setName(genotype); // store it
 
 			    line = dis.readLine();
-			    media = getStringLineItem(line,1,";");
-			    if (media.equals("10uM")) {
+			    media = getStringLineItem(line,1,";"); // get concentration value in the file
+			    if (media.equals("10uM")) { // sometimes the µ is transformed as a u !!!
 			    	media = "10µM";
 			    }
-			    currentAccession.setConcentration(media);
+			    currentAccession.setConcentration(media); // store it
 			    
 			    // skip lines with Age of Plants
 			    dis.readLine();
 			    
 			    // Get the accession number of plants
 			    line = dis.readLine();
-			    nbOfPlants = getIntegerLineItem(line,1,";");
-			    currentAccession.setNbOfPlants(nbOfPlants);
+			    nbOfPlants = getIntegerLineItem(line,1,";"); // get the number of plants in the file
+			    currentAccession.setN(nbOfPlants); // store it
 			    //System.out.println(nbOfPlants);
 			    
 			    // skip line with scale and 3 blank lines
@@ -248,15 +241,15 @@ public class Analysis {
 			    dis.readLine();
 
 			    // We need to extract for each plant in the accession:
-			    // - the main root length
+			    // - the length of the primary root
 			    // - the number of lateral roots
 			    // - the sum of all the lateral and their secondary roots length
-			    // - the roots density
-			    //
-			    Double[] mainRootLength = new Double[nbOfPlants];
+			    // - the density of lateral roots (zone 2)
+			    
+			    Double[] lengthOfPrimaryRoot = new Double[nbOfPlants];
 				int[] nbOfLateralRoots = new int[nbOfPlants];
-				Double[] sumOfLatRootsLength = new Double[nbOfPlants];
-				Double[] rootsDensity = new Double[nbOfPlants];
+				Double[] sumOfLateralRootsLength = new Double[nbOfPlants];
+				Double[] densityOfLateralRootsZ2 = new Double[nbOfPlants];
 				Double rootDeltaLength = 1.0;
 			    
 			    for (int i = 0; i < nbOfPlants; i++) {
@@ -264,26 +257,24 @@ public class Analysis {
 			    	// Skip line with the root identification (Root i)
 			    	dis.readLine();
 			    	
-			    	// Get the Main root length
+			    	// Get the length of the primary root
 			    	line = dis.readLine();
-			    	mainRootLength[i] = getDoubleLineItem(line,1,";");
-				    currentAccession.setMRL(mainRootLength[i],i);
-				    //System.out.println(roundDouble(rootLength[i]));
+			    	lengthOfPrimaryRoot[i] = getDoubleLineItem(line,1,";");
+				    currentAccession.setLPR(lengthOfPrimaryRoot[i],i);
+				    //System.out.println(roundDouble(lengthOfPrimaryRoot[i]));
 				    
 			    	// Skip lines with Main root vector, Main root angle
 				    dis.readLine();
 				    dis.readLine();
 				    
-				    // Get the Number lateral root(s)
+				    // Get the number lateral root(s)
 				    line = dis.readLine();
 				    nbOfLateralRoots[i] = getIntegerLineItem(line,1,";");
 				    currentAccession.setNLR(nbOfLateralRoots[i],i);
 				    
 				    // We will now get the length of each lateral root and of its secondary roots
-				    // we will sum those lengths only for roots having a length greater than a 
-				    // specified limit.
-				    //
-				    // We will compute the roots density based on the following algorithm:
+				    // we will sum those lengths only for roots having a length greater than the minimum limit.
+				    // We will compute the density of lateral roots  based on the following algorithm:
 				    // - Find the position of the first lateral root that is longer than the minimal value
 				    // - Find the position of the last lateral root that is longer than the minimal value
 				    // - Compute the delta between these two
@@ -361,21 +352,21 @@ public class Analysis {
 				    }
 				    
 				    // Save the value for the current root
-				    sumOfLatRootsLength[i]=lateralRootsLenghSum;
-				    currentAccession.setSLRL(sumOfLatRootsLength[i],i);
+				    sumOfLateralRootsLength[i]=lateralRootsLenghSum;
+				    currentAccession.setSLRL(sumOfLateralRootsLength[i],i);
 				    //System.out.println(roundDouble(sumOfLatRootsLength[i]));
 
-				    // Save the roots density
+				    // Save the density of lateral roots (Zone2)
 				    //System.out.println(nbOfLateralRoots[i]);
 				    if (nbOfLateralRoots[i] == 0) {
-				    	rootsDensity[i] = 0.00; // There are no lateral roots
-				    	currentAccession.setRD(rootsDensity[i],i);
+				    	densityOfLateralRootsZ2[i] = 0.00; // There are no lateral roots
+				    	currentAccession.setDLRZ2(densityOfLateralRootsZ2[i],i);
 				    } else if (nbOfLateralRoots[i] == 1) {
-				    	rootsDensity[i] = 1/mainRootLength[i]; // Only one lateral root
-				    	currentAccession.setRD(rootsDensity[i],i);
+				    	densityOfLateralRootsZ2[i] = 1/densityOfLateralRootsZ2[i]; // Only one lateral root
+				    	currentAccession.setDLRZ2(densityOfLateralRootsZ2[i],i);
 				    } else {
-				    	rootsDensity[i] = nbOfLateralRoots[i]/rootDeltaLength;
-				    	currentAccession.setRD(rootsDensity[i],i);
+				    	densityOfLateralRootsZ2[i] = nbOfLateralRoots[i]/rootDeltaLength;
+				    	currentAccession.setDLRZ2(densityOfLateralRootsZ2[i],i);
 				    }
 				    //System.out.println(rootsDensity[i]);
 				    
@@ -392,10 +383,10 @@ public class Analysis {
 			    		  				    genotype,
 			    		  				    media,
 			    		  				    nbOfPlants,
-			    		  				    mainRootLength,
+			    		  				  lengthOfPrimaryRoot,
 			    		  				    nbOfLateralRoots,
-			    		  				    sumOfLatRootsLength,
-			    		  				    rootsDensity);
+			    		  				    sumOfLateralRootsLength,
+			    		  				    densityOfLateralRootsZ2);
 
 		    }
 		    
@@ -411,16 +402,17 @@ public class Analysis {
 		return parsedAccession;
 	}
 	
+	//--------------------------------------------------------------------------------------------------------------------
 	private static Accession writeFile(Accession parsedaccession,
 			                           String outputfilename,
 							 	  	   String boxname,
 							 	  	   String genotype,
 							 	  	   String media,
 							 	  	   int nbofplants,
-							 	  	   Double[] mainrootlength,
+							 	  	   Double[] lengthofprimaryroot,
 							 	  	   int[] nboflateralroots,
-							 	  	   Double[] sumoflatrootslength,
-							 	  	   Double[] rootsdensity) throws IOException{
+							 	  	   Double[] sumoflateralrootslength,
+							 	  	   Double[] densityoflateralrootsZ2) throws IOException{
 		
 	    FileWriter f1 = new FileWriter(outputfilename);
 	    
@@ -429,10 +421,10 @@ public class Analysis {
 	    				"Box Name"+";"+
 	    				"Concentration"+";"+
 	    				"Nb of Plants"+";"+
-	    				"Main Root Length"+";"+";"+
+	    				"Length Primary Root"+";"+";"+
 	    				"Nb of Lateral Roots"+";"+";"+
 	    				"Sum of Lateral Roots Length"+";"+";"+
-						"Roots Density"+"\r\n";	    
+						"Density Lateral Roots Z2"+"\r\n";	    
 	    f1.write(source);
 	    
 	    // Write the second line, for this line we write the accession name, the box name, 
@@ -441,10 +433,10 @@ public class Analysis {
 	    		 boxname+";"+
 	    		 media+";"+
 	    		 nbofplants+";"+
-	    		 roundDouble(mainrootlength[0],"#.##")+";"+";"+
+	    		 roundDouble(lengthofprimaryroot[0],"#.##")+";"+";"+
 	    		 nboflateralroots[0]+";"+";"+
-	    		 roundDouble(sumoflatrootslength[0],"#.##")+";"+";"+
-		 		 roundDouble(rootsdensity[0],"#.##")+"\r\n";
+	    		 roundDouble(sumoflateralrootslength[0],"#.##")+";"+";"+
+		 		 roundDouble(densityoflateralrootsZ2[0],"#.##")+"\r\n";
 	    
 	    // Just to make sure the numbers are OK for Excel
 	    String newSource = source.replace(".", ",");			    
@@ -454,45 +446,45 @@ public class Analysis {
 	    for (int l = 1; l < nbofplants; l++ ){
 	    	
 	    	source = ";"+";"+";"+";"+
-					 roundDouble(mainrootlength[l],"#.##")+";"+";"+
+					 roundDouble(lengthofprimaryroot[l],"#.##")+";"+";"+
 					 nboflateralroots[l]+";"+";"+
-					 roundDouble(sumoflatrootslength[l],"#.##")+";"+";"+
-	    			 roundDouble(rootsdensity[l],"#.##")+"\r\n";
+					 roundDouble(sumoflateralrootslength[l],"#.##")+";"+";"+
+	    			 roundDouble(densityoflateralrootsZ2[l],"#.##")+"\r\n";
 	    	
 	    	newSource = source.replace(".", ",");    	
 	    	f1.write(newSource);	    	
 	    }
 	    
 	    // Calculate the means
-	    Double mainRootLengthMean = meanDouble(mainrootlength);
-	    parsedaccession.setMRLmean(mainRootLengthMean);
+	    Double mainRootLengthMean = meanDouble(lengthofprimaryroot);
+	    parsedaccession.setLPRmean(mainRootLengthMean);
 	    Double nbOfLateralRootsMean = meanInt(nboflateralroots);
 	    parsedaccession.setNLRmean(nbOfLateralRootsMean);
-	    Double sumOfLatRootsLengthMean = meanDouble(sumoflatrootslength);
+	    Double sumOfLatRootsLengthMean = meanDouble(sumoflateralrootslength);
 	    parsedaccession.setSLRLmean(sumOfLatRootsLengthMean);
-	    Double rootsDensityMean = meanDouble(rootsdensity);
-	    parsedaccession.setRDmean(rootsDensityMean);
+	    Double rootsDensityMean = meanDouble(densityoflateralrootsZ2);
+	    parsedaccession.setDLRZ2mean(rootsDensityMean);
 	    
 	    // Calculate the standard deviations
-	    Double mainRootLengthSD = sdDouble(mainrootlength);
+	    Double mainRootLengthSD = sdDouble(lengthofprimaryroot);
 	    //System.out.println(mainRootLengthSD);
-	    parsedaccession.setMRLsd(mainRootLengthSD);
+	    parsedaccession.setLPRsd(mainRootLengthSD);
 	    Double nbOfLateralRootsSD = sdInt(nboflateralroots);
 	    parsedaccession.setNLRsd(nbOfLateralRootsSD);
-	    Double sumOfLatRootsLengthSD = sdDouble(sumoflatrootslength);
+	    Double sumOfLatRootsLengthSD = sdDouble(sumoflateralrootslength);
 	    parsedaccession.setSLRLsd(sumOfLatRootsLengthSD);
-	    Double rootsDensitySD = sdDouble(rootsdensity);
-	    parsedaccession.setRDsd(rootsDensitySD);	    
+	    Double rootsDensitySD = sdDouble(densityoflateralrootsZ2);
+	    parsedaccession.setDLRZ2sd(rootsDensitySD);	    
 	    
 	    // Calculate the standard errors
 	    Double mainRootLengthSE = mainRootLengthSD/Math.sqrt(nbofplants-1);
-	    parsedaccession.setMRLse(mainRootLengthSE);
+	    parsedaccession.setLPRse(mainRootLengthSE);
 	    Double nbOfLateralRootsSE = nbOfLateralRootsSD/Math.sqrt(nbofplants-1);
 	    parsedaccession.setNLRse(nbOfLateralRootsSE);
 	    Double sumOfLatRootsLengthSE = sumOfLatRootsLengthSD/Math.sqrt(nbofplants-1);
 	    parsedaccession.setSLRLse(sumOfLatRootsLengthSE);
 	    Double rootsDensitySE = rootsDensitySD/Math.sqrt(nbofplants-1);
-	    parsedaccession.setRDse(rootsDensitySE);
+	    parsedaccession.setDLRZ2se(rootsDensitySE);
 	    
 	    // Write the line with the different mean values
 	    source = ";"+";"+";"+"Mean;"+
@@ -529,7 +521,8 @@ public class Analysis {
 	    return parsedaccession;
 	}
 	
-    private static String getStringLineItem(String line, int index, String patternstr) {
+    //---------------------------------------------------------------------------------------------------------------------
+	private static String getStringLineItem(String line, int index, String patternstr) {
     	
     	// This routine takes a string line as input and returns a string based on the index value 	
     	
@@ -543,6 +536,7 @@ public class Analysis {
     	return fieldStr;
     }
     
+	//---------------------------------------------------------------------------------------------------------------------
     private static int getIntegerLineItem(String line, int index, String patternstr) {
  
     	// This routine takes a string line as input and returns an integer based on the index value
@@ -550,7 +544,8 @@ public class Analysis {
     	String[] fields = line.split(patternstr);
     	return Integer.parseInt(fields[index]);
     }
-    
+
+    //---------------------------------------------------------------------------------------------------------------------
     private static Double getDoubleLineItem(String line, int index, String patternstr) {
 
     	// This routine takes a string line as input and returns a double based on the index value
@@ -560,6 +555,7 @@ public class Analysis {
     	return value;
     }
     
+	//---------------------------------------------------------------------------------------------------------------------
     private static String[] getFields(String line, String patternstr) {
     	
     	// This routine takes a string line as input and returns an array of string based on the split pattern
@@ -567,6 +563,7 @@ public class Analysis {
     	return fields;
     }
     
+	//---------------------------------------------------------------------------------------------------------------------
     static Double roundDouble(Double d, String decimalformat) {
     	
     	// This routine takes a double as input an returns a rounded double based on the format
@@ -576,6 +573,7 @@ public class Analysis {
 	return Double.valueOf(twoDForm.format(d).replace(",", "."));
     }
     
+	//---------------------------------------------------------------------------------------------------------------------
     static Double[] calculateGlobalMeans(List<Accession> list) {
     	
     	// This routines calculates the global means
@@ -589,10 +587,10 @@ public class Analysis {
     	Double[] RDmeans = new Double[list.size()];
     	
     	for (int i=0; i<list.size(); i++) {
-    		MRLmeans[i] = roundDouble(list.get(i).getMRLmean(),"#.##");
+    		MRLmeans[i] = roundDouble(list.get(i).getLPRmean(),"#.##");
     		NLRmeans[i] = roundDouble(list.get(i).getNLRmean(),"#.##");
     		SLRLmeans[i] = roundDouble(list.get(i).getSLRLmean(),"#.##");
-    		RDmeans[i] = roundDouble(list.get(i).getRDmean(),"#.##");
+    		RDmeans[i] = roundDouble(list.get(i).getDLRZ2mean(),"#.##");
         }
     	
     	calculatedMeans[0] = roundDouble(meanDouble(MRLmeans),"#.##");
@@ -602,7 +600,8 @@ public class Analysis {
     	
         return calculatedMeans;
     }
-    
+
+    //---------------------------------------------------------------------------------------------------------------------
     static Double meanDouble(Double[] p) {
 
     	// This routine returns the mean for doubles
@@ -614,6 +613,7 @@ public class Analysis {
         return sum / p.length;
     }
     
+	//---------------------------------------------------------------------------------------------------------------------
     static Double meanInt(int[] p) {
     	
     	// This routine returns the mean for integers
@@ -625,6 +625,7 @@ public class Analysis {
         return sum / p.length;
     }
     
+	//---------------------------------------------------------------------------------------------------------------------
     public static Double sdDouble ( Double[] data )
     {
     // This routine returns the standard deviation for doubles
@@ -655,6 +656,7 @@ public class Analysis {
     return Math.sqrt( sum / ( n - 1 ) );
     }
 
+	//---------------------------------------------------------------------------------------------------------------------
     public static Double sdInt ( int[] data )
     {
     // This routine returns the standard deviation for integers	
@@ -685,6 +687,7 @@ public class Analysis {
     return Math.sqrt( sum / ( n - 1 ) );
     }
 
+	//---------------------------------------------------------------------------------------------------------------------
     static Double[] moveToArray(Double value1, Double value2, Double value3, Double value4) {
     	
     	// Moves the 4 Doubles received as input into one array
@@ -716,4 +719,3 @@ public class Analysis {
     }
     
 }
-
