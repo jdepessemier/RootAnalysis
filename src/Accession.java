@@ -1,18 +1,19 @@
 public class Accession {
 	
-	private String name;
-	private String concentration;
-	private String box;
-	private int nbOfPlants;
-	private Double[] MRL = new Double[5];
-	private int[] NLR = new int[5];
-	private Double[] SLRL = new Double[5];
-	private Double[] RD = new Double[5];
+	private String name;                    // Accession Name
+	private String concentration;           // Accession Concentration
+	private String box;                     // Accession box reference
+	private int N;                          // Number of plants for the referenced box
+	private Double[] LPR = new Double[5];   // Array of Length of Primary Roots
+	private int[]    NLR = new int[5];      // Array of Number of Lateral Roots (>1mm)
+	private Double[] SLRL = new Double[5];  // Array of Sum of Lateral Roots Length
+	private Double[] DLRZ1 = new Double[5]; // Array of Density of Lateral Roots (Z1)
+	private Double[] DLRZ2 = new Double[5]; // Array of Density of Lateral Roots (Z2)
 	
-	// Main Root Length (MRL) mean, standard deviation, and standard error
-	private Double MRLmean;
-	private Double MRLsd;
-	private Double MRLse;
+	// Length of Primary Root (LPR) mean, standard deviation, and standard error
+	private Double LPRmean;
+	private Double LPRsd;
+	private Double LPRse;
 	
 	// Number of Lateral Roots (NLR) mean, standard deviation, and standard error 
 	private Double NLRmean;
@@ -24,78 +25,109 @@ public class Accession {
 	private Double SLRLsd;
 	private Double SLRLse;
 	
-	// Roots Density mean, standard deviation, and standard error
-	private Double RDmean;
-	private Double RDsd;
-	private Double RDse;
+	// Lateral Roots Length (LRL) mean, standard deviation, and standard error
+	private Double LRLmean;
+	private Double LRLsd;
+	private Double LRLse;
+	
+	// Density Lateral Roots Zone 1 (DLRZ1) mean, standard deviation, and standard error
+	private Double DLRZ1mean;
+	private Double DLRZ1sd;
+	private Double DLRZ1se;
+	
+	// Density Lateral Roots Zone 2 (DLRZ2) mean, standard deviation, and standard error
+	private Double DLRZ2mean;
+	private Double DLRZ2sd;
+	private Double DLRZ2se;
 	
 	public Accession() {
 		name = "";
 		concentration = "";
 		box = "";
-		nbOfPlants = 0;
+		N = 0;
 		
 		for (int i=0; i<4; i++) {
-			MRL[i] = 0.00;
+			LPR[i] = 0.00;
 			NLR[i] = 0;
 			SLRL[i] = 0.00;
-			RD[i] = 0.00;
+			DLRZ1[i] = 0.00;
+			DLRZ2[i] = 0.00;
 		}
 		
-		MRLmean = 0.00;
-		MRLsd = 0.00;
-		MRLse = 0.00;
+		LPRmean = 0.00;
+		LPRsd = 0.00;
+		LPRse = 0.00;
 		NLRmean = 0.00;
 		NLRsd = 0.00;
 		NLRse = 0.00;
 		SLRLmean = 0.00;
 		SLRLsd = 0.00;
-		SLRLse = 0.00;		
-		RDmean = 0.00;
-		RDsd = 0.00;
-		RDse = 0.00;		
+		SLRLse = 0.00;	
+		LRLmean = 0.00;
+		LRLsd = 0.00;
+		LRLse = 0.00;
+		DLRZ1mean = 0.00;
+		DLRZ1sd = 0.00;
+		DLRZ1se = 0.00;
+		DLRZ2mean = 0.00;
+		DLRZ2sd = 0.00;
+		DLRZ2se = 0.00;
 	}
 	
 	public Accession(String name,
 					 String concentration,
 					 String box,
 					 int nbofplants,
-					 Double[] mrl,
+					 Double[] lpr,
 					 int[] nlr,
 					 Double[] slrl,
-					 Double[] rd,
-					 Double mainrootlengthmean,
-					 Double mainrootlengthsd,
-					 Double mainrootlengthse,
-					 Double nboflateralrootsmean,
-					 Double nboflateralrootssd,
-					 Double nboflateralrootsse,
-					 Double sumoflateralrootslengthmean,
-					 Double sumoflateralrootslengthsd,
-					 Double sumoflateralrootslengthse,
-					 Double rootsdensitymean,
-					 Double rootsdensitysd,
-					 Double rootsdensityse) {
+					 Double[] dlrz1,
+					 Double[] dlrz2,
+					 Double lprmean,
+					 Double lprsd,
+					 Double lprse,
+					 Double nlrmean,
+					 Double nlrsd,
+					 Double nlrse,
+					 Double slrlmean,
+					 Double slrlsd,
+					 Double slrlse,
+					 Double lrlmean,
+					 Double lrlsd,
+					 Double lrlse,
+					 Double dlrz1mean,
+					 Double dlrz1sd,
+					 Double dlrz1se,
+					 Double dlrz2mean,
+					 Double dlrz2sd,
+					 Double dlrz2se) {
 		this.name = name;
 		this.concentration = concentration;
 		this.box = box;
-		this.nbOfPlants = nbofplants;
-		this.MRL = mrl;
+		this.N = nbofplants;
+		this.LPR = lpr;
 		this.NLR = nlr;
 		this.SLRL = slrl;
-		this.RD = rd;		
-		this.MRLmean = mainrootlengthmean;
-		this.MRLsd = mainrootlengthsd;
-		this.MRLse = mainrootlengthse;
-		this.NLRmean = nboflateralrootsmean;
-		this.NLRsd = nboflateralrootssd;
-		this.NLRse = nboflateralrootsse;
-		this.SLRLmean = sumoflateralrootslengthmean;
-		this.SLRLsd = sumoflateralrootslengthsd;
-		this.SLRLse = sumoflateralrootslengthse;
-		this.RDmean = rootsdensitymean;
-		this.RDsd = rootsdensitysd;
-		this.RDse = rootsdensityse;
+		this.DLRZ1 = dlrz1;
+		this.DLRZ2 = dlrz2;
+		this.LPRmean = lprmean;
+		this.LPRsd = lprsd;
+		this.LPRse = lprse;
+		this.NLRmean = nlrmean;
+		this.NLRsd = nlrsd;
+		this.NLRse = nlrse;
+		this.SLRLmean = slrlmean;
+		this.SLRLsd = slrlsd;
+		this.SLRLse = slrlse;
+		this.LRLmean = lrlmean;
+		this.LRLsd = lrlsd;
+		this.LRLse = lrlse;
+		this.DLRZ1mean = dlrz1mean;
+		this.DLRZ1sd = dlrz1sd;
+		this.DLRZ1se = dlrz1se;
+		this.DLRZ2mean = dlrz2mean;
+		this.DLRZ2sd = dlrz2sd;
+		this.DLRZ2se = dlrz2se;
 	}
 
 	// Accession Name
@@ -130,22 +162,22 @@ public class Accession {
 
 	// Number of Plants
 	
-	public int getNbOfPlants() {
-		return nbOfPlants;
+	public int getN() {
+		return N;
 	}
 
-	public void setNbOfPlants(int value) {
-		nbOfPlants = value;
+	public void setN(int value) {
+		N = value;
 	}
 	
-	// MRL
+	// LPR
 	
-	public Double getMRL(int idx) {
-		return MRL[idx];
+	public Double getLPR(int idx) {
+		return LPR[idx];
 	}
 
-	public void setMRL(double value, int idx) {
-		MRL[idx] = value;
+	public void setLPR(double value, int idx) {
+		LPR[idx] = value;
 	}
 	
 	// NLR
@@ -168,43 +200,53 @@ public class Accession {
 		SLRL[idx] = value;
 	}
 
-	// RD
+	// DLRZ1
 	
-	public Double getRD(int idx) {
-		return RD[idx];
+	public Double getDLRZ1(int idx) {
+		return DLRZ1[idx];
 	}
 
-	public void setRD(double value, int idx) {
-		RD[idx] = value;
+	public void setDLRZ1(double value, int idx) {
+		DLRZ1[idx] = value;
 	}
-
-	// Main Root Length
 	
-	public Double getMRLmean() {
-		return MRLmean;
+	// DLRZ2
+	
+	public Double getDLRZ2(int idx) {
+		return DLRZ2[idx];
 	}
 
-	public void setMRLmean(Double value) {
-		MRLmean = value;
+	public void setDLRZ2(double value, int idx) {
+		DLRZ2[idx] = value;
 	}
 
-	public Double getMRLsd() {
-		return MRLsd;
+	// LPR mean, sd, se
+	
+	public Double getLPRmean() {
+		return LPRmean;
 	}
 
-	public void setMRLsd(Double value) {
-		MRLsd = value;
+	public void setLPRmean(Double value) {
+		LPRmean = value;
 	}
 
-	public Double getMRLse() {
-		return MRLse;
+	public Double getLPRsd() {
+		return LPRsd;
 	}
 
-	public void setMRLse(Double value) {
-		MRLse = value;
+	public void setLPRsd(Double value) {
+		LPRsd = value;
 	}
 
-	// Number of Lateral Roots
+	public Double getLPRse() {
+		return LPRse;
+	}
+
+	public void setLPRse(Double value) {
+		LPRse = value;
+	}
+
+	// NLR mean, sd, se
 	
 	public Double getNLRmean() {
 		return NLRmean;
@@ -230,7 +272,7 @@ public class Accession {
 		NLRse = value;
 	}
 
-	// Sum of Lateral Roots Length
+	// SLRL mean, sd, se
 	
 	public Double getSLRLmean() {
 		return SLRLmean;
@@ -256,30 +298,82 @@ public class Accession {
 		SLRLse = value;
 	}
 
-	// Roots Density
+	// LRL mean, sd, se
 	
-	public Double getRDmean() {
-		return RDmean;
+	public Double getLRLmean() {
+		return LRLmean;
 	}
 
-	public void setRDmean(Double value) {
-		RDmean = value;
+	public void setLRLmean(Double value) {
+		LRLmean = value;
 	}
 
-	public Double getRDsd() {
-		return RDsd;
+	public Double getLRLsd() {
+		return LRLsd;
 	}
 
-	public void setRDsd(Double value) {
-		RDsd = value;
+	public void setLRLsd(Double value) {
+		LRLsd = value;
 	}
 
-	public Double getRDse() {
-		return RDse;
+	public Double getLRLse() {
+		return LRLse;
 	}
 
-	public void setRDse(Double value) {
-		RDse = value;
+	public void setLRLse(Double value) {
+		LRLse = value;
+	}
+	
+	// DLRZ1 mean, sd, se
+	
+	public Double getDLRZ1mean() {
+		return DLRZ1mean;
+	}
+
+	public void setDLRZ1mean(Double value) {
+		DLRZ1mean = value;
+	}
+
+	public Double getDLRZ1sd() {
+		return DLRZ1sd;
+	}
+
+	public void setDLRZ1sd(Double value) {
+		DLRZ1sd = value;
+	}
+
+	public Double getDLRZ1se() {
+		return DLRZ1se;
+	}
+
+	public void setDLRZ1se(Double value) {
+		DLRZ1se = value;
+	}
+	
+	// DLRZ2 mean, sd, se
+	
+	public Double getDLRZ2mean() {
+		return DLRZ2mean;
+	}
+
+	public void setDLRZ2mean(Double value) {
+		DLRZ2mean = value;
+	}
+
+	public Double getDLRZ2sd() {
+		return DLRZ2sd;
+	}
+
+	public void setDLRZ2sd(Double value) {
+		DLRZ2sd = value;
+	}
+
+	public Double getDLRZ2se() {
+		return DLRZ2se;
+	}
+
+	public void setDLRZ2se(Double value) {
+		DLRZ2se = value;
 	}
 	
 }
