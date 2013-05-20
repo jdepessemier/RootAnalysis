@@ -31,7 +31,7 @@ public class Analysis {
 		// secondary root
 		
 		String root = "C:";
-		String workDir = "W_2013_03_18";
+		String workDir = "W_2012_03_22-08";
 		Double minLateralRootLength = 0.1;
 		
 		// Setup the working directories inside the main directory
@@ -53,7 +53,7 @@ public class Analysis {
 		} else {
 		    for (int i=0; i<children.length; i++) { // Loop in the directory for the files to be treated
 
-		    	// Get the accession name out of the file name
+		    	// Extract the accession name out of the file name
 		    	int pointIndex = children[i].indexOf(".");
 			    String accession = children[i].substring(0, pointIndex);
 			    //System.out.println(accession);
