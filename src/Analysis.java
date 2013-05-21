@@ -51,22 +51,22 @@ public class Analysis {
 		} else {
 		    for (int i=0; i<children.length; i++) { // Loop in the directory for the files to be treated
 
-		    	// Extract the accession name out of the file name ------------------------------------------------------
+		    	// Extract the accession name out of the file name
 		    	int pointIndex = children[i].indexOf(".");
 			    String accession = children[i].substring(0, pointIndex);
 			    //System.out.println(accession);
 			    
-			    // Build the different file names -----------------------------------------------------------------------
+			    // Build the different file names
 			    String inputFileName = inputDir+accession+".bmp.txt";
 			    //String inputFileName = inputDir+accession+".txt";
 				String cleanupFileName = cleanupDir+accession+".txt";
 				String outputFileName = outputDir+accession+".csv";
 				
-				// Clean up the input file and store it -----------------------------------------------------------------
+				// Clean up the input file and store it
 				File inFile = new File(inputFileName);
 				cleanup(inFile,cleanupFileName);
 				
-				// Parse the file we have cleaned up to extract the required data ---------------------------------------
+				// Parse the file we have cleaned up to extract the required data
 				// Build a .csv file for each accession containing the extracted data
 				inFile = new File(cleanupFileName);
 				Accession myAccession = new Accession();
@@ -75,7 +75,7 @@ public class Analysis {
 			    accessionsList.add(myAccession);			    
 		    }		    
 			
-		    // Write file Accession.xls ----------------------------------------------------------------------------------
+		    // Write file Accession.xls
 		    String outFileName = finalDir+"Accessions.xls";	    
 		    writeAccessionsFile(outFileName,accessionsList);
 		    
@@ -114,8 +114,6 @@ public class Analysis {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-
 
 			int delta = 0;
 			int offset = 1; 
@@ -157,7 +155,6 @@ public class Analysis {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------
