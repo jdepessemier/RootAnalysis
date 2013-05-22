@@ -79,6 +79,96 @@ public class Analysis {
 		    String outFileName = finalDir+"Accessions.xls";	    
 		    writeAccessionsFile(outFileName,accessionsList);
 		    
+		    // Write final file #1 
+		    outFileName = finalDir+"AccessionsMeans.xls";
+		    
+			WritableWorkbook workbook = Workbook.createWorkbook(new File(outFileName));
+			WritableSheet sheet = workbook.createSheet("Accessions", 0);
+			WritableFont headerInformationFont = new WritableFont(WritableFont.createFont("CALIBRI"), 10, WritableFont.BOLD);
+			WritableCellFormat headerInformationFormat = new WritableCellFormat(headerInformationFont);
+			WritableFont InformationFont = new WritableFont(WritableFont.createFont("CALIBRI"), 10, WritableFont.NO_BOLD);
+			WritableCellFormat InformationFormat = new WritableCellFormat(InformationFont);
+			WritableCellFormat cf2 = new WritableCellFormat(InformationFont,NumberFormats.FLOAT);
+			WritableCellFormat intg = new WritableCellFormat (InformationFont, NumberFormats.INTEGER);
+
+			try {
+				sheet.addCell(new Label(0, 0, "Accession", headerInformationFormat));
+				sheet.addCell(new Label(1, 0, "Concentration", headerInformationFormat));
+				sheet.addCell(new Label(2, 0, "Box  ", headerInformationFormat));
+				sheet.addCell(new Label(3, 0, "Nb of Plants", headerInformationFormat));
+				sheet.addCell(new Label(4, 0, "LPR   ", headerInformationFormat));
+				sheet.addCell(new Label(5, 0, "NLR   ", headerInformationFormat));		
+				sheet.addCell(new Label(6, 0, "SLRL   ", headerInformationFormat));
+				sheet.addCell(new Label(7, 0, "Density LR Z2", headerInformationFormat));
+			} catch (RowsExceededException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (WriteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			try {
+				int delta = 0;
+				int offset = 1; 
+				for (int j = 0; j < accessionsList.size(); j++ ){
+					offset = offset + delta;
+					sheet.addCell(new Label(0, j+offset, accessionsList.get(j).getName(), InformationFormat));
+					sheet.addCell(new Label(1, j+offset, accessionsList.get(j).getConcentration(), InformationFormat));
+					sheet.addCell(new Label(2, j+offset, accessionsList.get(j).getBox(), InformationFormat));
+					sheet.addCell(new Number(3, j+offset,accessionsList.get(j).getN(),intg ));
+					sheet.addCell(new Number(4, j+offset,accessionsList.get(j).getLPR(0),cf2 ));
+					sheet.addCell(new Number(5, j+offset,accessionsList.get(j).getNLR(0),cf2 ));
+					sheet.addCell(new Number(6, j+offset,accessionsList.get(j).getSLRL(0),cf2 ));
+					sheet.addCell(new Number(7, j+offset,accessionsList.get(j).getDLRZ2(0),cf2 ));
+					
+				    for (int l = 1; l < accessionsList.get(j).getN(); l++ ){
+						sheet.addCell(new Number(4, l+j+offset,accessionsList.get(j).getLPR(l),cf2 ));
+						sheet.addCell(new Number(5, l+j+offset,accessionsList.get(j).getNLR(l),cf2 ));
+						sheet.addCell(new Number(6, l+j+offset,accessionsList.get(j).getSLRL(l),cf2 ));
+						sheet.addCell(new Number(7, l+j+offset,accessionsList.get(j).getDLRZ2(l),cf2 ));	    	
+				    }
+							    
+					sheet.addCell(new Label(3, j+accessionsList.get(j).getN()+offset, "MEAN", InformationFormat));
+					sheet.addCell(new Number(4, j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getLPRmean(),cf2 ));
+					sheet.addCell(new Number(5, j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getNLRmean(),cf2 ));
+					sheet.addCell(new Number(6, j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getSLRLmean(),cf2 ));
+					sheet.addCell(new Number(7, j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getDLRZ2mean(),cf2 ));
+			
+					sheet.addCell(new Label(3, j+accessionsList.get(j).getN()+offset+1, "SD", InformationFormat));
+					sheet.addCell(new Number(4, j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getLPRsd(),cf2 ));
+					sheet.addCell(new Number(5, j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getNLRsd(),cf2 ));
+					sheet.addCell(new Number(6, j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getSLRLsd(),cf2 ));
+					sheet.addCell(new Number(7, j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getDLRZ2sd(),cf2 ));
+				
+					sheet.addCell(new Label(3, j+accessionsList.get(j).getN()+offset+2, "SE", InformationFormat));
+					sheet.addCell(new Number(4, j+accessionsList.get(j).getN()+offset+2, accessionsList.get(j).getLPRse(),cf2 ));
+					sheet.addCell(new Number(5, j+accessionsList.get(j).getN()+offset+2, accessionsList.get(j).getNLRse(),cf2 ));
+					sheet.addCell(new Number(6, j+accessionsList.get(j).getN()+offset+2, accessionsList.get(j).getSLRLse(),cf2 ));
+					sheet.addCell(new Number(7, j+accessionsList.get(j).getN()+offset+2, accessionsList.get(j).getDLRZ2se(),cf2 ));
+				
+					delta = accessionsList.get(j).getN() + 2;
+				}
+				
+				int c = sheet.getColumns();
+				for(int x=0;x<c;x++)
+				{
+				    CellView cell = sheet.getColumnView(x);
+				    cell.setAutosize(true);
+				    sheet.setColumnView(x, cell);
+				}
+				
+				workbook.write();
+				workbook.close();
+
+			} catch (RowsExceededException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (WriteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}				
 	}
 	
