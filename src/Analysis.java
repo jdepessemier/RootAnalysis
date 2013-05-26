@@ -80,8 +80,12 @@ public class Analysis {
 		    writeAccessionsFile(outFileName,accessionsList);
 		    
 		    // Write file AccessionsStatistics.xls
-		    outFileName = finalDir+"AccessionsStatistics.xls";
-		    writeAccessionsStatisticsFile(outFileName,accessionsList);
+		    outFileName = finalDir+"AccessionsStatistics_1.xls";
+		    writeAccessionsStatistics01File(outFileName,accessionsList);
+		    
+		    // Write file AccessionsStatistics.xls
+		    outFileName = finalDir+"AccessionsStatistics_2.xls";
+		    writeAccessionsStatistics02File(outFileName,accessionsList);
 
 		}				
 	}
@@ -162,7 +166,7 @@ public class Analysis {
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------
-	public static void writeAccessionsStatisticsFile(String outFileName,List<Accession> accessionsList) throws IOException{
+	public static void writeAccessionsStatistics01File(String outFileName,List<Accession> accessionsList) throws IOException{
 		
 		WritableWorkbook workbook = Workbook.createWorkbook(new File(outFileName));
 		WritableSheet sheet = workbook.createSheet("Accessions", 0);
@@ -265,7 +269,83 @@ public class Analysis {
 		
 	}
 
-	
+	//--------------------------------------------------------------------------------------------------------------------
+	public static void writeAccessionsStatistics02File(String outFileName,List<Accession> accessionsList) throws IOException{
+		
+		WritableWorkbook workbook = Workbook.createWorkbook(new File(outFileName));
+		WritableSheet sheet = workbook.createSheet("Accessions", 0);
+		WritableFont headerInformationFont = new WritableFont(WritableFont.createFont("CALIBRI"), 10, WritableFont.BOLD);
+		WritableCellFormat headerInformationFormat = new WritableCellFormat(headerInformationFont);
+		WritableFont InformationFont = new WritableFont(WritableFont.createFont("CALIBRI"), 10, WritableFont.NO_BOLD);
+		WritableCellFormat InformationFormat = new WritableCellFormat(InformationFont);
+		WritableCellFormat cf2 = new WritableCellFormat(InformationFont,NumberFormats.FLOAT);
+		WritableCellFormat intg = new WritableCellFormat (InformationFont, NumberFormats.INTEGER);
+
+		try {
+			sheet.addCell(new Label(0, 0, "Accession", headerInformationFormat));
+			sheet.addCell(new Label(1, 0, "Concentration", headerInformationFormat));
+			sheet.addCell(new Label(2, 0, "Box  ", headerInformationFormat));
+			sheet.addCell(new Label(3, 0, "Nb of Plants", headerInformationFormat));
+			sheet.addCell(new Label(4, 0, "LPR   ", headerInformationFormat));
+			sheet.addCell(new Label(7, 0, "NLR   ", headerInformationFormat));		
+			sheet.addCell(new Label(10, 0, "SLRL   ", headerInformationFormat));
+			sheet.addCell(new Label(13, 0, "Mean LRL   ", headerInformationFormat));
+			sheet.addCell(new Label(16, 0, "Density LR Z1   ", headerInformationFormat));			
+			sheet.addCell(new Label(19, 0, "Density LR Z2", headerInformationFormat));
+		} catch (RowsExceededException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WriteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			for (int j = 0; j < accessionsList.size(); j++ ){
+				sheet.addCell(new Label(0,j+1, accessionsList.get(j).getName(), InformationFormat));
+				sheet.addCell(new Label(1,j+1, accessionsList.get(j).getConcentration(), InformationFormat));
+				sheet.addCell(new Label(2,j+1, accessionsList.get(j).getBox(), InformationFormat));
+				sheet.addCell(new Number(3,j+1,accessionsList.get(j).getN(),intg ));
+				sheet.addCell(new Number(4,j+1,accessionsList.get(j).getLPRmean(),cf2 ));
+				sheet.addCell(new Label(5,j+1, "±", InformationFormat));
+				sheet.addCell(new Number(6,j+1,accessionsList.get(j).getLPRse(),cf2 ));
+				sheet.addCell(new Number(7,j+1,accessionsList.get(j).getNLRmean(),cf2 ));
+				sheet.addCell(new Label(8,j+1, "±", InformationFormat));
+				sheet.addCell(new Number(9,j+1,accessionsList.get(j).getNLRse(),cf2 ));
+				sheet.addCell(new Number(10,j+1,accessionsList.get(j).getSLRLmean(),cf2 ));
+				sheet.addCell(new Label(11,j+1, "±", InformationFormat));
+				sheet.addCell(new Number(12,j+1,accessionsList.get(j).getSLRLse(),cf2 ));
+				sheet.addCell(new Number(13,j+1,accessionsList.get(j).getMeanLRLmean(),cf2 ));
+				sheet.addCell(new Label(14,j+1, "±", InformationFormat));
+				sheet.addCell(new Number(15,j+1,accessionsList.get(j).getMeanLRLse(),cf2 ));
+				sheet.addCell(new Number(16,j+1,accessionsList.get(j).getDLRZ1mean(),cf2 ));
+				sheet.addCell(new Label(17,j+1, "±", InformationFormat));
+				sheet.addCell(new Number(18,j+1,accessionsList.get(j).getDLRZ1se(),cf2 ));
+				sheet.addCell(new Number(19,j+1,accessionsList.get(j).getDLRZ2mean(),cf2 ));
+				sheet.addCell(new Label(20,j+1, "±", InformationFormat));
+				sheet.addCell(new Number(21,j+1,accessionsList.get(j).getDLRZ2se(),cf2 ));
+			}
+			
+			int c = sheet.getColumns();
+			for(int x=0;x<c;x++)
+			{
+			    CellView cell = sheet.getColumnView(x);
+			    cell.setAutosize(true);
+			    sheet.setColumnView(x, cell);
+			}
+			
+			workbook.write();
+			workbook.close();
+
+		} catch (RowsExceededException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WriteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	public static void cleanup(File infile,String cleanupfilename){
