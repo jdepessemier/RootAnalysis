@@ -79,95 +79,9 @@ public class Analysis {
 		    String outFileName = finalDir+"Accessions.xls";	    
 		    writeAccessionsFile(outFileName,accessionsList);
 		    
-		    // Write final file #1 
-		    outFileName = finalDir+"AccessionsMeans.xls";
-		    
-			WritableWorkbook workbook = Workbook.createWorkbook(new File(outFileName));
-			WritableSheet sheet = workbook.createSheet("Accessions", 0);
-			WritableFont headerInformationFont = new WritableFont(WritableFont.createFont("CALIBRI"), 10, WritableFont.BOLD);
-			WritableCellFormat headerInformationFormat = new WritableCellFormat(headerInformationFont);
-			WritableFont InformationFont = new WritableFont(WritableFont.createFont("CALIBRI"), 10, WritableFont.NO_BOLD);
-			WritableCellFormat InformationFormat = new WritableCellFormat(InformationFont);
-			WritableCellFormat cf2 = new WritableCellFormat(InformationFont,NumberFormats.FLOAT);
-			WritableCellFormat intg = new WritableCellFormat (InformationFont, NumberFormats.INTEGER);
-
-			try {
-				sheet.addCell(new Label(0, 0, "Accession", headerInformationFormat));
-				sheet.addCell(new Label(1, 0, "Concentration", headerInformationFormat));
-				sheet.addCell(new Label(2, 0, "Box  ", headerInformationFormat));
-				sheet.addCell(new Label(3, 0, "Nb of Plants", headerInformationFormat));
-				sheet.addCell(new Label(4, 0, "LPR   ", headerInformationFormat));
-				sheet.addCell(new Label(5, 0, "NLR   ", headerInformationFormat));		
-				sheet.addCell(new Label(6, 0, "SLRL   ", headerInformationFormat));
-				sheet.addCell(new Label(7, 0, "Density LR Z2", headerInformationFormat));
-			} catch (RowsExceededException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (WriteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			try {
-				int delta = 0;
-				int offset = 1; 
-				for (int j = 0; j < accessionsList.size(); j++ ){
-					offset = offset + delta;
-					sheet.addCell(new Label(0, j+offset, accessionsList.get(j).getName(), InformationFormat));
-					sheet.addCell(new Label(1, j+offset, accessionsList.get(j).getConcentration(), InformationFormat));
-					sheet.addCell(new Label(2, j+offset, accessionsList.get(j).getBox(), InformationFormat));
-					sheet.addCell(new Number(3, j+offset,accessionsList.get(j).getN(),intg ));
-					sheet.addCell(new Number(4, j+offset,accessionsList.get(j).getLPR(0),cf2 ));
-					sheet.addCell(new Number(5, j+offset,accessionsList.get(j).getNLR(0),cf2 ));
-					sheet.addCell(new Number(6, j+offset,accessionsList.get(j).getSLRL(0),cf2 ));
-					sheet.addCell(new Number(7, j+offset,accessionsList.get(j).getDLRZ2(0),cf2 ));
-					
-				    for (int l = 1; l < accessionsList.get(j).getN(); l++ ){
-						sheet.addCell(new Number(4, l+j+offset,accessionsList.get(j).getLPR(l),cf2 ));
-						sheet.addCell(new Number(5, l+j+offset,accessionsList.get(j).getNLR(l),cf2 ));
-						sheet.addCell(new Number(6, l+j+offset,accessionsList.get(j).getSLRL(l),cf2 ));
-						sheet.addCell(new Number(7, l+j+offset,accessionsList.get(j).getDLRZ2(l),cf2 ));	    	
-				    }
-							    
-					sheet.addCell(new Label(3, j+accessionsList.get(j).getN()+offset, "MEAN", InformationFormat));
-					sheet.addCell(new Number(4, j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getLPRmean(),cf2 ));
-					sheet.addCell(new Number(5, j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getNLRmean(),cf2 ));
-					sheet.addCell(new Number(6, j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getSLRLmean(),cf2 ));
-					sheet.addCell(new Number(7, j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getDLRZ2mean(),cf2 ));
-			
-					sheet.addCell(new Label(3, j+accessionsList.get(j).getN()+offset+1, "SD", InformationFormat));
-					sheet.addCell(new Number(4, j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getLPRsd(),cf2 ));
-					sheet.addCell(new Number(5, j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getNLRsd(),cf2 ));
-					sheet.addCell(new Number(6, j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getSLRLsd(),cf2 ));
-					sheet.addCell(new Number(7, j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getDLRZ2sd(),cf2 ));
-				
-					sheet.addCell(new Label(3, j+accessionsList.get(j).getN()+offset+2, "SE", InformationFormat));
-					sheet.addCell(new Number(4, j+accessionsList.get(j).getN()+offset+2, accessionsList.get(j).getLPRse(),cf2 ));
-					sheet.addCell(new Number(5, j+accessionsList.get(j).getN()+offset+2, accessionsList.get(j).getNLRse(),cf2 ));
-					sheet.addCell(new Number(6, j+accessionsList.get(j).getN()+offset+2, accessionsList.get(j).getSLRLse(),cf2 ));
-					sheet.addCell(new Number(7, j+accessionsList.get(j).getN()+offset+2, accessionsList.get(j).getDLRZ2se(),cf2 ));
-				
-					delta = accessionsList.get(j).getN() + 2;
-				}
-				
-				int c = sheet.getColumns();
-				for(int x=0;x<c;x++)
-				{
-				    CellView cell = sheet.getColumnView(x);
-				    cell.setAutosize(true);
-				    sheet.setColumnView(x, cell);
-				}
-				
-				workbook.write();
-				workbook.close();
-
-			} catch (RowsExceededException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (WriteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		    // Write file AccessionsStatistics.xls
+		    outFileName = finalDir+"AccessionsStatistics.xls";
+		    writeAccessionsStatisticsFile(outFileName,accessionsList);
 
 		}				
 	}
@@ -195,8 +109,8 @@ public class Analysis {
 				sheet.addCell(new Label(6, 0, "SLRL   ", headerInformationFormat));
 				sheet.addCell(new Label(7, 0, "Mean LRL   ", headerInformationFormat));
 				sheet.addCell(new Label(8, 0, "DLRZ1", headerInformationFormat));
-				sheet.addCell(new Label(9, 0, "Length P1 Plast", headerInformationFormat));
-				sheet.addCell(new Label(10, 0, "DLRZ2", headerInformationFormat));
+				sheet.addCell(new Label(9, 0, "DLRZ2", headerInformationFormat));
+				sheet.addCell(new Label(10, 0, "Length Z2", headerInformationFormat));
 			} catch (RowsExceededException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -219,8 +133,8 @@ public class Analysis {
 						sheet.addCell(new Number(6, l+offset,accessionsList.get(j).getSLRL(l),cf2 ));
 						sheet.addCell(new Number(7, l+offset,accessionsList.get(j).getMeanLRL(l),cf2 ));
 						sheet.addCell(new Number(8, l+offset,accessionsList.get(j).getDLRZ1(l),cf2 ));
-						sheet.addCell(new Number(9, l+offset,accessionsList.get(j).getP1_Plast(l),cf2 ));
-						sheet.addCell(new Number(10, l+offset,accessionsList.get(j).getDLRZ2(l),cf2 ));	
+						sheet.addCell(new Number(9, l+offset,accessionsList.get(j).getDLRZ2(l),cf2 ));	
+						sheet.addCell(new Number(10, l+offset,accessionsList.get(j).getP1_Plast(l),cf2 ));
 					} catch (RowsExceededException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -247,6 +161,112 @@ public class Analysis {
 			} 
 	}
 
+	//--------------------------------------------------------------------------------------------------------------------
+	public static void writeAccessionsStatisticsFile(String outFileName,List<Accession> accessionsList) throws IOException{
+		
+		WritableWorkbook workbook = Workbook.createWorkbook(new File(outFileName));
+		WritableSheet sheet = workbook.createSheet("Accessions", 0);
+		WritableFont headerInformationFont = new WritableFont(WritableFont.createFont("CALIBRI"), 10, WritableFont.BOLD);
+		WritableCellFormat headerInformationFormat = new WritableCellFormat(headerInformationFont);
+		WritableFont InformationFont = new WritableFont(WritableFont.createFont("CALIBRI"), 10, WritableFont.NO_BOLD);
+		WritableCellFormat InformationFormat = new WritableCellFormat(InformationFont);
+		WritableCellFormat cf2 = new WritableCellFormat(InformationFont,NumberFormats.FLOAT);
+		WritableCellFormat intg = new WritableCellFormat (InformationFont, NumberFormats.INTEGER);
+
+		try {
+			sheet.addCell(new Label(0, 0, "Accession", headerInformationFormat));
+			sheet.addCell(new Label(1, 0, "Concentration", headerInformationFormat));
+			sheet.addCell(new Label(2, 0, "Box  ", headerInformationFormat));
+			sheet.addCell(new Label(3, 0, "Nb of Plants", headerInformationFormat));
+			sheet.addCell(new Label(4, 0, "LPR   ", headerInformationFormat));
+			sheet.addCell(new Label(5, 0, "NLR   ", headerInformationFormat));		
+			sheet.addCell(new Label(6, 0, "SLRL   ", headerInformationFormat));
+			sheet.addCell(new Label(7, 0, "Mean LRL   ", headerInformationFormat));
+			sheet.addCell(new Label(8, 0, "Density LR Z1   ", headerInformationFormat));			
+			sheet.addCell(new Label(9, 0, "Density LR Z2", headerInformationFormat));
+		} catch (RowsExceededException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WriteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			int delta = 0;
+			int offset = 1; 
+			for (int j = 0; j < accessionsList.size(); j++ ){
+				offset = offset + delta;
+				sheet.addCell(new Label(0,j+offset, accessionsList.get(j).getName(), InformationFormat));
+				sheet.addCell(new Label(1,j+offset, accessionsList.get(j).getConcentration(), InformationFormat));
+				sheet.addCell(new Label(2,j+offset, accessionsList.get(j).getBox(), InformationFormat));
+				sheet.addCell(new Number(3,j+offset,accessionsList.get(j).getN(),intg ));
+				sheet.addCell(new Number(4,j+offset,accessionsList.get(j).getLPR(0),cf2 ));
+				sheet.addCell(new Number(5,j+offset,accessionsList.get(j).getNLR(0),cf2 ));
+				sheet.addCell(new Number(6,j+offset,accessionsList.get(j).getSLRL(0),cf2 ));
+				sheet.addCell(new Number(7,j+offset,accessionsList.get(j).getMeanLRL(0),cf2 ));
+				sheet.addCell(new Number(8,j+offset,accessionsList.get(j).getDLRZ1(0),cf2 ));				
+				sheet.addCell(new Number(9,j+offset,accessionsList.get(j).getDLRZ2(0),cf2 ));
+				
+			    for (int l = 1; l < accessionsList.get(j).getN(); l++ ){
+					sheet.addCell(new Number(4,l+j+offset,accessionsList.get(j).getLPR(l),cf2 ));
+					sheet.addCell(new Number(5,l+j+offset,accessionsList.get(j).getNLR(l),cf2 ));
+					sheet.addCell(new Number(6,l+j+offset,accessionsList.get(j).getSLRL(l),cf2 ));
+					sheet.addCell(new Number(7,l+j+offset,accessionsList.get(j).getMeanLRL(l),cf2 ));
+					sheet.addCell(new Number(8,l+j+offset,accessionsList.get(j).getDLRZ1(l),cf2 ));
+					sheet.addCell(new Number(9,l+j+offset,accessionsList.get(j).getDLRZ2(l),cf2 ));	    	
+			    }
+						    
+				sheet.addCell(new Label(3,j+accessionsList.get(j).getN()+offset, "MEAN", InformationFormat));
+				sheet.addCell(new Number(4,j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getLPRmean(),cf2 ));
+				sheet.addCell(new Number(5,j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getNLRmean(),cf2 ));
+				sheet.addCell(new Number(6,j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getSLRLmean(),cf2 ));
+				sheet.addCell(new Number(7,j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getMeanLRLmean(),cf2 ));
+				sheet.addCell(new Number(8,j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getDLRZ1mean(),cf2 ));
+				sheet.addCell(new Number(9,j+accessionsList.get(j).getN()+offset,accessionsList.get(j).getDLRZ2mean(),cf2 ));
+		
+				sheet.addCell(new Label(3,j+accessionsList.get(j).getN()+offset+1, "SD", InformationFormat));
+				sheet.addCell(new Number(4,j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getLPRsd(),cf2 ));
+				sheet.addCell(new Number(5,j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getNLRsd(),cf2 ));
+				sheet.addCell(new Number(6,j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getSLRLsd(),cf2 ));
+				sheet.addCell(new Number(7,j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getMeanLRLsd(),cf2 ));
+				sheet.addCell(new Number(8,j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getDLRZ1sd(),cf2 ));
+				sheet.addCell(new Number(9,j+accessionsList.get(j).getN()+offset+1,accessionsList.get(j).getDLRZ2sd(),cf2 ));
+			
+				sheet.addCell(new Label(3,j+accessionsList.get(j).getN()+offset+2, "SE", InformationFormat));
+				sheet.addCell(new Number(4,j+accessionsList.get(j).getN()+offset+2,accessionsList.get(j).getLPRse(),cf2 ));
+				sheet.addCell(new Number(5,j+accessionsList.get(j).getN()+offset+2,accessionsList.get(j).getNLRse(),cf2 ));
+				sheet.addCell(new Number(6,j+accessionsList.get(j).getN()+offset+2,accessionsList.get(j).getSLRLse(),cf2 ));
+				sheet.addCell(new Number(7,j+accessionsList.get(j).getN()+offset+2,accessionsList.get(j).getMeanLRLse(),cf2 ));
+				sheet.addCell(new Number(8,j+accessionsList.get(j).getN()+offset+2,accessionsList.get(j).getDLRZ1se(),cf2 ));
+				sheet.addCell(new Number(9,j+accessionsList.get(j).getN()+offset+2,accessionsList.get(j).getDLRZ2se(),cf2 ));
+			
+				delta = accessionsList.get(j).getN()+2;
+			}
+			
+			int c = sheet.getColumns();
+			for(int x=0;x<c;x++)
+			{
+			    CellView cell = sheet.getColumnView(x);
+			    cell.setAutosize(true);
+			    sheet.setColumnView(x, cell);
+			}
+			
+			workbook.write();
+			workbook.close();
+
+		} catch (RowsExceededException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WriteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	
+	
 	//--------------------------------------------------------------------------------------------------------------------
 	public static void cleanup(File infile,String cleanupfilename){
 		
@@ -353,7 +373,11 @@ public class Analysis {
 			    // - the length of the primary root
 			    // - the number of lateral roots
 			    // - the sum of all the lateral and their secondary roots length
-			    // - the density of lateral roots (zone 2)
+			    // - the mean of the lateral roots lengths
+			    // - the density of the lateral roots in zone 1
+			    // - the density of lateral roots in zone 2
+			    // (Zone 2 being the length between the position of the first lateral roots and the last
+			    //  lateral roots that are >= of the min lateral roots value)
 			    
 			    Double[] lengthOfPrimaryRoot = new Double[nbOfPlants];
 				int[] nbOfLateralRoots = new int[nbOfPlants];
@@ -378,7 +402,7 @@ public class Analysis {
 				    dis.readLine();
 				    dis.readLine();
 				    
-				    // Get the number lateral root(s)
+				    // Get the number of lateral root(s)
 				    line = dis.readLine();
 				    nbOfLateralRoots[i] = getIntegerLineItem(line,1,";");
 				    currentAccession.setNLR(nbOfLateralRoots[i],i);
@@ -512,9 +536,11 @@ public class Analysis {
 			    		  				    genotype,
 			    		  				    media,
 			    		  				    nbOfPlants,
-			    		  				  lengthOfPrimaryRoot,
+			    		  				    lengthOfPrimaryRoot,
 			    		  				    nbOfLateralRoots,
 			    		  				    sumOfLateralRootsLength,
+			    		  				    meanOfLateralRootsLength,
+			    							densityOfLateralRootsZ1,
 			    		  				    densityOfLateralRootsZ2);
 
 		    }
@@ -541,6 +567,8 @@ public class Analysis {
 							 	  	   Double[] lengthofprimaryroot,
 							 	  	   int[] nboflateralroots,
 							 	  	   Double[] sumoflateralrootslength,
+							 	  	   Double[] meanoflateralrootslength,
+							 	  	   Double[] densityoflateralrootsZ1,
 							 	  	   Double[] densityoflateralrootsZ2) throws IOException{
 		
 	    FileWriter f1 = new FileWriter(outputfilename);
@@ -550,9 +578,11 @@ public class Analysis {
 	    				"Box Name"+";"+
 	    				"Concentration"+";"+
 	    				"Nb of Plants"+";"+
-	    				"Length Primary Root"+";"+";"+
-	    				"Nb of Lateral Roots"+";"+";"+
-	    				"Sum of Lateral Roots Length"+";"+";"+
+	    				"Length Primary Root"+";"+
+	    				"Nb of Lateral Roots"+";"+
+	    				"Sum of Lateral Roots Length"+";"+
+	    				"Mean of Lateral Roots Lengths"+";"+
+	    				"Density Lateral Roots Z1"+";"+
 						"Density Lateral Roots Z2"+"\r\n";	    
 	    f1.write(source);
 	    
@@ -562,9 +592,11 @@ public class Analysis {
 	    		 boxname+";"+
 	    		 media+";"+
 	    		 nbofplants+";"+
-	    		 roundDouble(lengthofprimaryroot[0],"#.##")+";"+";"+
-	    		 nboflateralroots[0]+";"+";"+
-	    		 roundDouble(sumoflateralrootslength[0],"#.##")+";"+";"+
+	    		 roundDouble(lengthofprimaryroot[0],"#.##")+";"+
+	    		 nboflateralroots[0]+";"+
+	    		 roundDouble(sumoflateralrootslength[0],"#.##")+";"+
+	    		 roundDouble(meanoflateralrootslength[0],"#.##")+";"+
+	    		 roundDouble(densityoflateralrootsZ1[0],"#.##")+";"+
 		 		 roundDouble(densityoflateralrootsZ2[0],"#.##")+"\r\n";
 	    
 	    // Just to make sure the numbers are OK for Excel
@@ -575,9 +607,11 @@ public class Analysis {
 	    for (int l = 1; l < nbofplants; l++ ){
 	    	
 	    	source = ";"+";"+";"+";"+
-					 roundDouble(lengthofprimaryroot[l],"#.##")+";"+";"+
-					 nboflateralroots[l]+";"+";"+
-					 roundDouble(sumoflateralrootslength[l],"#.##")+";"+";"+
+					 roundDouble(lengthofprimaryroot[l],"#.##")+";"+
+					 nboflateralroots[l]+";"+
+					 roundDouble(sumoflateralrootslength[l],"#.##")+";"+
+					 roundDouble(meanoflateralrootslength[l],"#.##")+";"+
+					 roundDouble(densityoflateralrootsZ1[l],"#.##")+";"+
 	    			 roundDouble(densityoflateralrootsZ2[l],"#.##")+"\r\n";
 	    	
 	    	newSource = source.replace(".", ",");    	
@@ -591,8 +625,12 @@ public class Analysis {
 	    parsedaccession.setNLRmean(nbOfLateralRootsMean);
 	    Double sumOfLatRootsLengthMean = meanDouble(sumoflateralrootslength);
 	    parsedaccession.setSLRLmean(sumOfLatRootsLengthMean);
-	    Double rootsDensityMean = meanDouble(densityoflateralrootsZ2);
-	    parsedaccession.setDLRZ2mean(rootsDensityMean);
+	    Double meanOfLatRootsLengthMean = meanDouble(meanoflateralrootslength);
+	    parsedaccession.setMeanLRLmean(meanOfLatRootsLengthMean);
+	    Double rootsDensityLRZ1Mean = meanDouble(densityoflateralrootsZ1);
+	    parsedaccession.setDLRZ1mean(rootsDensityLRZ1Mean);	    
+	    Double rootsDensityLRZ2Mean = meanDouble(densityoflateralrootsZ2);
+	    parsedaccession.setDLRZ2mean(rootsDensityLRZ2Mean);
 	    
 	    // Calculate the standard deviations
 	    Double mainRootLengthSD = sdDouble(lengthofprimaryroot);
@@ -602,8 +640,12 @@ public class Analysis {
 	    parsedaccession.setNLRsd(nbOfLateralRootsSD);
 	    Double sumOfLatRootsLengthSD = sdDouble(sumoflateralrootslength);
 	    parsedaccession.setSLRLsd(sumOfLatRootsLengthSD);
-	    Double rootsDensitySD = sdDouble(densityoflateralrootsZ2);
-	    parsedaccession.setDLRZ2sd(rootsDensitySD);	    
+	    Double meanOfLatRootsLengthSD = sdDouble(meanoflateralrootslength);
+	    parsedaccession.setMeanLRLsd(meanOfLatRootsLengthSD);
+	    Double rootsDensityLRZ1SD = sdDouble(densityoflateralrootsZ1);
+	    parsedaccession.setDLRZ1sd(rootsDensityLRZ1SD);	    	    
+	    Double rootsDensityLRZ2SD = sdDouble(densityoflateralrootsZ2);
+	    parsedaccession.setDLRZ2sd(rootsDensityLRZ2SD);	    
 	    
 	    // Calculate the standard errors
 	    Double mainRootLengthSE = mainRootLengthSD/Math.sqrt(nbofplants-1);
@@ -612,35 +654,45 @@ public class Analysis {
 	    parsedaccession.setNLRse(nbOfLateralRootsSE);
 	    Double sumOfLatRootsLengthSE = sumOfLatRootsLengthSD/Math.sqrt(nbofplants-1);
 	    parsedaccession.setSLRLse(sumOfLatRootsLengthSE);
-	    Double rootsDensitySE = rootsDensitySD/Math.sqrt(nbofplants-1);
-	    parsedaccession.setDLRZ2se(rootsDensitySE);
+	    Double meanOfLatRootsLengthSE = meanOfLatRootsLengthSD/Math.sqrt(nbofplants-1);
+	    parsedaccession.setMeanLRLse(meanOfLatRootsLengthSE);
+	    Double rootsDensityLRZ1SE = rootsDensityLRZ1SD/Math.sqrt(nbofplants-1);
+	    parsedaccession.setDLRZ1se(rootsDensityLRZ1SE);	    
+	    Double rootsDensityLRZ2SE = rootsDensityLRZ2SD/Math.sqrt(nbofplants-1);
+	    parsedaccession.setDLRZ2se(rootsDensityLRZ2SE);
 	    
 	    // Write the line with the different mean values
 	    source = ";"+";"+";"+"Mean;"+
-	    		 roundDouble(mainRootLengthMean,"#.##")+";"+";"+
-	    		 roundDouble(nbOfLateralRootsMean,"#.##")+";"+";"+
-	    		 roundDouble(sumOfLatRootsLengthMean,"#.##")+";"+";"+
-		 		 roundDouble(rootsDensityMean,"#.##")+"\r\n";
+	    		 roundDouble(mainRootLengthMean,"#.##")+";"+
+	    		 roundDouble(nbOfLateralRootsMean,"#.##")+";"+
+	    		 roundDouble(sumOfLatRootsLengthMean,"#.##")+";"+
+	    		 roundDouble(meanOfLatRootsLengthMean,"#.##")+";"+
+	    		 roundDouble(rootsDensityLRZ1Mean,"#.##")+";"+
+		 		 roundDouble(rootsDensityLRZ2Mean,"#.##")+"\r\n";
 		    
 	    newSource = source.replace(".", ",");
 	    f1.write(newSource);
 
 	    // Write the line with the different standard deviations
 	    source = ";"+";"+";"+"SD;"+
-		 		 roundDouble(mainRootLengthSD,"#.##")+";"+";"+
-		 		 roundDouble(nbOfLateralRootsSD,"#.##")+";"+";"+
-		 		 roundDouble(sumOfLatRootsLengthSD,"#.##")+";"+";"+
-		 		 roundDouble(rootsDensitySD,"#.##")+"\r\n";
+		 		 roundDouble(mainRootLengthSD,"#.##")+";"+
+		 		 roundDouble(nbOfLateralRootsSD,"#.##")+";"+
+		 		 roundDouble(sumOfLatRootsLengthSD,"#.##")+";"+
+		 		 roundDouble(meanOfLatRootsLengthSD,"#.##")+";"+
+		 		 roundDouble(rootsDensityLRZ1SD,"#.##")+";"+
+		 		 roundDouble(rootsDensityLRZ2SD,"#.##")+"\r\n";
 		    
 	    newSource = source.replace(".", ",");
 	    f1.write(newSource);
 
 	    // Write the line with the different standard errors
 	    source = ";"+";"+";"+"SE;"+
-		 		 roundDouble(mainRootLengthSE,"#.##")+";"+";"+
-		 		 roundDouble(nbOfLateralRootsSE,"#.##")+";"+";"+
-		 		 roundDouble(sumOfLatRootsLengthSE,"#.##")+";"+";"+
-		 		 roundDouble(rootsDensitySE,"#.##")+"\r\n";
+		 		 roundDouble(mainRootLengthSE,"#.##")+";"+
+		 		 roundDouble(nbOfLateralRootsSE,"#.##")+";"+
+		 		 roundDouble(sumOfLatRootsLengthSE,"#.##")+";"+
+		 		 roundDouble(meanOfLatRootsLengthSE,"#.##")+";"+
+		 		 roundDouble(rootsDensityLRZ1SE,"#.##")+";"+
+		 		 roundDouble(rootsDensityLRZ2SE,"#.##")+"\r\n";
 		    
 	    newSource = source.replace(".", ",");
 	    f1.write(newSource);
