@@ -86,10 +86,64 @@ public class Analysis {
 		    // Write file AccessionsStatistics.xls
 		    outFileName = finalDir+"AccessionsStatistics_2.xls";
 		    writeAccessionsStatistics02File(outFileName,accessionsList);
+		    
+		    // Write file AccessionsHighLow.xls
+		    outFileName = finalDir+"AccessionsTempFile01.csv";
+		    writeTempFile1(outFileName,accessionsList);			    
 
 		}				
 	}
-	
+
+	//------------------------------------------------------------------------------------------------------------------
+	private static void writeTempFile1(String outputfilename,List<Accession> accessionlist) throws IOException{	
+
+		FileWriter f1 = new FileWriter(outputfilename);
+		String source="";
+
+		for (int j = 0; j < accessionlist.size(); j++ ){
+
+			String name= "";
+			String concentration="";
+			String box="";
+			int nbOfPlants=0;
+			Double LPRmean=0.0;
+			Double NLRmean=0.0;
+			Double SLRLmean=0.0;
+			Double meanLRLmean=0.0;
+			Double DLRZ1mean=0.0;
+			Double DLRZ2mean=0.0;
+
+
+			name = accessionlist.get(j).getName();
+			concentration = accessionlist.get(j).getConcentration();
+			box = accessionlist.get(j).getBox();
+			nbOfPlants = accessionlist.get(j).getN();
+			LPRmean = accessionlist.get(j).getLPRmean();
+			NLRmean = accessionlist.get(j).getNLRmean();
+			SLRLmean = accessionlist.get(j).getSLRLmean();
+			meanLRLmean = accessionlist.get(j).getMeanLRLmean();
+			DLRZ1mean = accessionlist.get(j).getDLRZ1mean();
+			DLRZ2mean = accessionlist.get(j).getDLRZ2mean();
+
+
+			source = name+";"+
+					 concentration+";"+
+					 nbOfPlants+";"+
+					 box+";"+
+					 roundDouble(LPRmean,"#.##")+";"+
+					 roundDouble(NLRmean,"#.##")+";"+
+					 roundDouble(SLRLmean,"#.##")+";"+
+					 roundDouble(meanLRLmean,"#.##")+";"+
+					 roundDouble(DLRZ1mean,"#.##")+";"+
+					 roundDouble(DLRZ2mean,"#.##")+"\r\n";
+
+			// Just to make sure the numbers are OK for Excel
+			String newSource = source.replace(".", ",");			    
+			f1.write(newSource);
+		}
+		f1.close();
+	}
+
 	//--------------------------------------------------------------------------------------------------------------------
 	public static void writeAccessionsFile(String outFileName,List<Accession> accessionsList) throws IOException{
 
