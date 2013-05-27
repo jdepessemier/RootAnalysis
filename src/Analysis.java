@@ -89,11 +89,871 @@ public class Analysis {
 		    
 		    // Write file AccessionsHighLow.xls
 		    outFileName = finalDir+"AccessionsTempFile01.csv";
-		    writeTempFile1(outFileName,accessionsList);			    
-
+		    writeTempFile1(outFileName,accessionsList);		
+		    
+		    File inFile1 = new File(finalDir+"AccessionsTempFile01.csv");
+		    List<AccessionMeans> accessionMeansList = new ArrayList<AccessionMeans>();
+		    accessionMeansList = getAccessionMeansList(inFile1);	    
+		    outFileName = finalDir+"AccessionsTempFile02.csv";
+		    writeTempFile2(outFileName,accessionMeansList);
+		   
+		    File inFile2 = new File(finalDir+"AccessionsTempFile02.csv");
+		    List<AccessionMeans> globalAccessionMeans = new ArrayList<AccessionMeans>();	    
+		    globalAccessionMeans = getGlobalAccessionMeansList(inFile2);    
+		    outFileName = finalDir+"AccessionsHighsLows.csv";
+		    writeAccessionHighsLowsFile(outFileName,globalAccessionMeans);
 		}				
 	}
 
+	//------------------------------------------------------------------------------------------------------------------
+	private static void writeAccessionHighsLowsFile(String outputfilename,List<AccessionMeans> globalAccessionMeans) throws IOException{
+		
+		List<Accession> myAccessionNamesList = new ArrayList<Accession>();
+		String currentName="";
+		String name="";
+		
+		for (int j = 0; j < globalAccessionMeans.size(); j++ ){
+			name = globalAccessionMeans.get(j).getName();
+			if (!(name.equals(currentName))) {
+				Accession myAccessionNames = new Accession();
+				myAccessionNames.setName(name);
+				myAccessionNamesList.add(myAccessionNames);
+				currentName=name;
+			}
+		}
+			
+		for (int j = 0; j < myAccessionNamesList.size(); j++ ){
+			System.out.println(myAccessionNamesList.get(j).getName());
+		}
+			
+		FileWriter f1 = new FileWriter(outputfilename);
+		String source="";
+		String LOW = "10µM";
+		String HIGH = "10mM";
+		
+
+		List<AccessionHighsLows> toSaveAccessionHighsLowsList = new ArrayList<AccessionHighsLows>();
+			
+		for (int j = 0; j < myAccessionNamesList.size(); j++ ){
+			String currentAccessionName = myAccessionNamesList.get(j).getName();
+			AccessionHighsLows myAccessionHighsLows = new AccessionHighsLows();
+			myAccessionHighsLows.setName(currentAccessionName);
+			for (int k = 0; k < globalAccessionMeans.size(); k++ ){
+				String accessionMeansName = globalAccessionMeans.get(k).getName();
+				String concentration = globalAccessionMeans.get(k).getConcentration();
+				if (currentAccessionName.equals(accessionMeansName)){
+					if (concentration.equals(LOW)) {
+						myAccessionHighsLows.setLPRmeanlow(globalAccessionMeans.get(k).getLPRmean());
+						myAccessionHighsLows.setNLRmeanlow(globalAccessionMeans.get(k).getNLRmean());
+						myAccessionHighsLows.setSLRLmeanlow(globalAccessionMeans.get(k).getSLRLmean());
+						myAccessionHighsLows.setMeanLRLmeanlow(globalAccessionMeans.get(k).getMeanLRLmean());
+						myAccessionHighsLows.setDLRZ1meanlow(globalAccessionMeans.get(k).getDLRZ1mean());
+						myAccessionHighsLows.setDLRZ2meanlow(globalAccessionMeans.get(k).getDLRZ2mean());
+					} else {
+						myAccessionHighsLows.setLPRmeanhigh(globalAccessionMeans.get(k).getLPRmean());
+						myAccessionHighsLows.setNLRmeanhigh(globalAccessionMeans.get(k).getNLRmean());
+						myAccessionHighsLows.setSLRLmeanhigh(globalAccessionMeans.get(k).getSLRLmean());
+						myAccessionHighsLows.setMeanLRLmeanhigh(globalAccessionMeans.get(k).getMeanLRLmean());
+						myAccessionHighsLows.setDLRZ1meanhigh(globalAccessionMeans.get(k).getDLRZ1mean());
+						myAccessionHighsLows.setDLRZ2meanhigh(globalAccessionMeans.get(k).getDLRZ2mean());
+					}
+				}
+			}
+			
+			toSaveAccessionHighsLowsList.add(myAccessionHighsLows);
+		}
+		
+		// Write first line with the columns titles
+		source = "Accession"+";"+
+				 "LPR (Low)"+";"+
+				 "NLR (Low)"+";"+
+				 "SLRL (Low)"+";"+
+				 "Mean LRL (Low)"+";"+
+				 "Density LR Z1 (Low)"+";"+
+				 "Density LR Z2 (Low)"+";"+
+				 "LPR (High)"+";"+
+				 "NLR (High)"+";"+
+				 "SLRL (High)"+";"+
+				 "Mean LRL (High)"+";"+
+				 "Density LR Z1 (High)"+";"+		 
+				 "Density LR Z2 (High)"+"\r\n";	
+		
+		f1.write(source);
+						
+		for (int j = 0; j < toSaveAccessionHighsLowsList.size(); j++ ){
+			
+			source = toSaveAccessionHighsLowsList.get(j).getName()+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getLPRmeanlow(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getNLRmeanlow(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getSLRLmeanlow(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getMeanLRLmeanlow(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ1meanlow(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ2meanlow(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getLPRmeanhigh(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getNLRmeanhigh(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getSLRLmeanhigh(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getMeanLRLmeanhigh(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ1meanhigh(),"#.##")+";"+					 
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ2meanhigh(),"#.##")+"\r\n";
+
+			// Just to make sure the numbers are OK for Excel
+			String newSource = source.replace(".", ",");			    
+			f1.write(newSource);
+		}
+
+		f1.close();
+	}	
+	
+	//------------------------------------------------------------------------------------------------------------------
+	private static List<AccessionMeans> getGlobalAccessionMeansList(File infile){
+		
+		FileInputStream fis = null;
+		BufferedInputStream bis = null;
+		DataInputStream dis = null;
+		
+		// variables to store the data
+		String accession;
+		String concentration;
+		Double LPRmean=0.0;
+		Double NLRmean=0.0;
+		Double SLRLmean=0.0;
+		Double meanLRLmean=0.0;
+		Double DLRZ1mean=0.0;
+		Double DLRZ2mean=0.0;
+		
+		List<AccessionMeans> myAccessionMeansList = new ArrayList<AccessionMeans>();
+		
+		try {
+			fis = new FileInputStream(infile);
+		    bis = new BufferedInputStream(fis);
+		    dis = new DataInputStream(bis);
+		    
+		    while (dis.available() != 0) {
+		    	   	
+		    	String line = dis.readLine();
+		    	
+		    	accession = getStringLineItem(line,0,";");
+		    	concentration = getStringLineItem(line,1,";");
+		    	LPRmean = getDoubleLineItem(line,2,";");
+		    	NLRmean = getDoubleLineItem(line,3,";");
+		    	SLRLmean = getDoubleLineItem(line,4,";");
+		    	meanLRLmean = getDoubleLineItem(line,5,";");
+		    	DLRZ1mean = getDoubleLineItem(line,6,";");
+		    	DLRZ2mean = getDoubleLineItem(line,7,";");
+		    	
+		    	AccessionMeans myAccessionMeans = new AccessionMeans();
+		    	
+		    	myAccessionMeans.setName(accession);
+		    	myAccessionMeans.setConcentration(concentration);
+		    	myAccessionMeans.setLPRmean(LPRmean);
+		    	myAccessionMeans.setNLRmean(NLRmean);
+		    	myAccessionMeans.setSLRLmean(SLRLmean);
+		    	myAccessionMeans.setMeanLRLmean(SLRLmean);
+		    	myAccessionMeans.setDLRZ1mean(DLRZ1mean);
+		    	myAccessionMeans.setDLRZ2mean(DLRZ2mean);
+		    	
+		    	myAccessionMeansList.add(myAccessionMeans);	 
+		    		    	
+		    }
+		    
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+
+		return myAccessionMeansList;
+	}	
+	
+	//-----------------------------------------------------------------------------------------------------------------------
+	private static void writeTempFile2(String outputfilename,List<AccessionMeans> accessionMeansList) throws IOException{	
+		
+		List<AccessionMeans> accessionMeansList_A  = new ArrayList<AccessionMeans>();
+		List<AccessionMeans> accessionMeansList_B  = new ArrayList<AccessionMeans>();
+		List<AccessionMeans> accessionMeansList_C  = new ArrayList<AccessionMeans>();
+		List<AccessionMeans> accessionMeansList_D  = new ArrayList<AccessionMeans>();
+		List<AccessionMeans> accessionMeansList_E  = new ArrayList<AccessionMeans>();
+		List<AccessionMeans> accessionMeansList_F  = new ArrayList<AccessionMeans>();
+		List<AccessionMeans> accessionMeansList_G  = new ArrayList<AccessionMeans>();
+		List<AccessionMeans> accessionMeansList_H  = new ArrayList<AccessionMeans>();
+		List<AccessionMeans> accessionMeansList_I  = new ArrayList<AccessionMeans>();
+		
+		List<AccessionMeans> finalAccessionMeansList  = new ArrayList<AccessionMeans>();
+			
+		// Get the list of all unique accessions names ------------------------------------------------------------------
+		List<Accession> accessionNamesList = new ArrayList<Accession>();
+		String currentAccessionName="";
+		String accessionName="";
+
+		for (int j = 0; j < accessionMeansList.size(); j++ ){
+			accessionName = accessionMeansList.get(j).getName();
+			if (!(accessionName.equals(currentAccessionName))) {
+				Accession myAccessionName = new Accession();
+				myAccessionName.setName(accessionName);
+				accessionNamesList.add(myAccessionName);
+				currentAccessionName=accessionName;
+			}
+		}
+		
+//		// Debug
+//	    for (int l = 0; l < accessionNamesList.size(); l++ ){
+//	    	System.out.println(accessionNamesList.get(l).getName());
+//	    }	
+	    
+	    // Set the list of concentrations -------------------------------------------------------------------------------
+	    List<Concentration> concentrationList = new ArrayList<Concentration>();
+		Concentration concentration_10mM = new Concentration("10mM");
+		concentrationList.add(concentration_10mM);
+		Concentration concentration_10µM = new Concentration("10µM");
+		concentrationList.add(concentration_10µM);
+		
+//		// Debug
+//	    for (int l = 0; l < concentrationList.size(); l++ ){
+//	    	System.out.println(concentrationList.get(l).getName());
+//	    }
+	    
+		String name= "";
+		String concentration="";
+		String box="";
+		int nbofplants=0;
+		Double LPRmean=0.0;
+		Double NLRmean=0.0;
+		Double SLRLmean=0.0;
+		Double meanLRLmean=0.0;
+		Double DLRZ1mean=0.0;
+		Double DLRZ2mean=0.0;
+			
+		// Sort the accessions per boxes - A,B,C,D,E,F,G,H,I -------------------------------------------------------------
+		for (int j = 0; j < accessionMeansList.size(); j++ ){
+			
+			name = accessionMeansList.get(j).getName();
+			concentration = accessionMeansList.get(j).getConcentration();
+			box = accessionMeansList.get(j).getBox();
+			nbofplants = accessionMeansList.get(j).getN();
+			LPRmean = accessionMeansList.get(j).getLPRmean();
+			NLRmean = accessionMeansList.get(j).getNLRmean();
+			SLRLmean = accessionMeansList.get(j).getSLRLmean();
+			meanLRLmean = accessionMeansList.get(j).getMeanLRLmean();
+			DLRZ1mean = accessionMeansList.get(j).getDLRZ1mean();
+			DLRZ2mean = accessionMeansList.get(j).getDLRZ2mean();
+			
+			if (box.equals("A")) {
+				AccessionMeans myAccessionMeans_A = new AccessionMeans();
+				myAccessionMeans_A.setName(name);
+				myAccessionMeans_A.setBox(box);
+				myAccessionMeans_A.setConcentration(concentration);
+				myAccessionMeans_A.setN(nbofplants);
+				myAccessionMeans_A.setLPRmean(LPRmean);
+				myAccessionMeans_A.setNLRmean(NLRmean);
+				myAccessionMeans_A.setSLRLmean(SLRLmean);
+				myAccessionMeans_A.setMeanLRLmean(meanLRLmean);
+				myAccessionMeans_A.setDLRZ1mean(DLRZ1mean);
+				myAccessionMeans_A.setDLRZ2mean(DLRZ2mean);
+				accessionMeansList_A.add(myAccessionMeans_A);
+			}
+			if (box.equals("B")) {
+				AccessionMeans myAccessionMeans_B = new AccessionMeans();
+				myAccessionMeans_B.setName(name);
+				myAccessionMeans_B.setBox(box);
+				myAccessionMeans_B.setConcentration(concentration);
+				myAccessionMeans_B.setN(nbofplants);
+				myAccessionMeans_B.setLPRmean(LPRmean);
+				myAccessionMeans_B.setNLRmean(NLRmean);
+				myAccessionMeans_B.setSLRLmean(SLRLmean);
+				myAccessionMeans_B.setMeanLRLmean(meanLRLmean);
+				myAccessionMeans_B.setDLRZ1mean(DLRZ1mean);
+				myAccessionMeans_B.setDLRZ2mean(DLRZ2mean);
+				accessionMeansList_B.add(myAccessionMeans_B);
+			}
+			if (box.equals("C")) {
+				AccessionMeans myAccessionMeans_C = new AccessionMeans();
+				myAccessionMeans_C.setName(name);
+				myAccessionMeans_C.setBox(box);
+				myAccessionMeans_C.setConcentration(concentration);
+				myAccessionMeans_C.setN(nbofplants);
+				myAccessionMeans_C.setLPRmean(LPRmean);
+				myAccessionMeans_C.setNLRmean(NLRmean);
+				myAccessionMeans_C.setSLRLmean(SLRLmean);
+				myAccessionMeans_C.setMeanLRLmean(meanLRLmean);
+				myAccessionMeans_C.setDLRZ1mean(DLRZ1mean);
+				myAccessionMeans_C.setDLRZ2mean(DLRZ2mean);
+				accessionMeansList_C.add(myAccessionMeans_C);
+			}
+			if (box.equals("D")) {
+				AccessionMeans myAccessionMeans_D = new AccessionMeans();
+				myAccessionMeans_D.setName(name);
+				myAccessionMeans_D.setBox(box);
+				myAccessionMeans_D.setConcentration(concentration);
+				myAccessionMeans_D.setN(nbofplants);
+				myAccessionMeans_D.setLPRmean(LPRmean);
+				myAccessionMeans_D.setNLRmean(NLRmean);
+				myAccessionMeans_D.setSLRLmean(SLRLmean);
+				myAccessionMeans_D.setMeanLRLmean(meanLRLmean);
+				myAccessionMeans_D.setDLRZ1mean(DLRZ1mean);
+				myAccessionMeans_D.setDLRZ2mean(DLRZ2mean);
+				accessionMeansList_D.add(myAccessionMeans_D);
+			}
+			if (box.equals("E")) {
+				AccessionMeans myAccessionMeans_E = new AccessionMeans();
+				myAccessionMeans_E.setName(name);
+				myAccessionMeans_E.setBox(box);
+				myAccessionMeans_E.setConcentration(concentration);
+				myAccessionMeans_E.setN(nbofplants);
+				myAccessionMeans_E.setLPRmean(LPRmean);
+				myAccessionMeans_E.setNLRmean(NLRmean);
+				myAccessionMeans_E.setSLRLmean(SLRLmean);
+				myAccessionMeans_E.setMeanLRLmean(meanLRLmean);
+				myAccessionMeans_E.setDLRZ1mean(DLRZ1mean);
+				myAccessionMeans_E.setDLRZ2mean(DLRZ2mean);
+				accessionMeansList_E.add(myAccessionMeans_E);
+			}
+			if (box.equals("F")) {
+				AccessionMeans myAccessionMeans_F = new AccessionMeans();
+				myAccessionMeans_F.setName(name);
+				myAccessionMeans_F.setBox(box);
+				myAccessionMeans_F.setConcentration(concentration);
+				myAccessionMeans_F.setN(nbofplants);
+				myAccessionMeans_F.setLPRmean(LPRmean);
+				myAccessionMeans_F.setNLRmean(NLRmean);
+				myAccessionMeans_F.setSLRLmean(SLRLmean);
+				myAccessionMeans_F.setMeanLRLmean(meanLRLmean);
+				myAccessionMeans_F.setDLRZ1mean(DLRZ1mean);
+				myAccessionMeans_F.setDLRZ2mean(DLRZ2mean);
+				accessionMeansList_F.add(myAccessionMeans_F);
+			}
+			if (box.equals("G")) {
+				AccessionMeans myAccessionMeans_G = new AccessionMeans();
+				myAccessionMeans_G.setName(name);
+				myAccessionMeans_G.setBox(box);
+				myAccessionMeans_G.setConcentration(concentration);
+				myAccessionMeans_G.setN(nbofplants);
+				myAccessionMeans_G.setLPRmean(LPRmean);
+				myAccessionMeans_G.setNLRmean(NLRmean);
+				myAccessionMeans_G.setSLRLmean(SLRLmean);
+				myAccessionMeans_G.setMeanLRLmean(meanLRLmean);
+				myAccessionMeans_G.setDLRZ1mean(DLRZ1mean);
+				myAccessionMeans_G.setDLRZ2mean(DLRZ2mean);
+				accessionMeansList_G.add(myAccessionMeans_G);
+			}
+			if (box.equals("H")) {
+				AccessionMeans myAccessionMeans_H = new AccessionMeans();
+				myAccessionMeans_H.setName(name);
+				myAccessionMeans_H.setBox(box);
+				myAccessionMeans_H.setConcentration(concentration);
+				myAccessionMeans_H.setN(nbofplants);
+				myAccessionMeans_H.setLPRmean(LPRmean);
+				myAccessionMeans_H.setNLRmean(NLRmean);
+				myAccessionMeans_H.setSLRLmean(SLRLmean);
+				myAccessionMeans_H.setMeanLRLmean(meanLRLmean);
+				myAccessionMeans_H.setDLRZ1mean(DLRZ1mean);
+				myAccessionMeans_H.setDLRZ2mean(DLRZ2mean);
+				accessionMeansList_H.add(myAccessionMeans_H);
+			}
+			if (box.equals("I")) {
+				AccessionMeans myAccessionMeans_I = new AccessionMeans();
+				myAccessionMeans_I.setName(name);
+				myAccessionMeans_I.setBox(box);
+				myAccessionMeans_I.setConcentration(concentration);
+				myAccessionMeans_I.setN(nbofplants);
+				myAccessionMeans_I.setLPRmean(LPRmean);
+				myAccessionMeans_I.setNLRmean(NLRmean);
+				myAccessionMeans_I.setSLRLmean(SLRLmean);
+				myAccessionMeans_I.setMeanLRLmean(meanLRLmean);
+				myAccessionMeans_I.setDLRZ1mean(DLRZ1mean);
+				myAccessionMeans_I.setDLRZ2mean(DLRZ2mean);
+				accessionMeansList_I.add(myAccessionMeans_I);
+			}
+		}	
+		
+		//Debug
+		System.out.println(accessionMeansList_A.size()+" "+
+				accessionMeansList_B.size()+" "+
+				accessionMeansList_C.size()+" "+
+				accessionMeansList_D.size()+" "+
+				accessionMeansList_E.size()+" "+
+				accessionMeansList_F.size()+" "+
+				accessionMeansList_G.size()+" "+
+				accessionMeansList_H.size()+" "+
+				accessionMeansList_I.size());
+		
+		
+		// Loop in the unique accessions names, and by concentration combine the data ------------------------------------
+			
+		for (int i = 0; i < accessionNamesList.size(); i++ ){
+		
+			name = accessionNamesList.get(i).getName();
+			for (int j = 0; j < concentrationList.size(); j++ ){
+				
+				int totalNbOfPlants=0;
+				int nbOfPlantsA=0;
+				int nbOfPlantsB=0;
+				int nbOfPlantsC=0;
+				int nbOfPlantsD=0;				
+				int nbOfPlantsE=0;
+				int nbOfPlantsF=0;
+				int nbOfPlantsG=0;
+				int nbOfPlantsH=0;
+				int nbOfPlantsI=0;
+				
+				Double LPRmeanA=0.0;
+				Double LPRmeanB=0.0;
+				Double LPRmeanC=0.0;
+				Double LPRmeanD=0.0;
+				Double LPRmeanE=0.0;
+				Double LPRmeanF=0.0;
+				Double LPRmeanG=0.0;
+				Double LPRmeanH=0.0;
+				Double LPRmeanI=0.0;
+				
+				Double NLRmeanA=0.0;
+				Double NLRmeanB=0.0;
+				Double NLRmeanC=0.0;
+				Double NLRmeanD=0.0;
+				Double NLRmeanE=0.0;
+				Double NLRmeanF=0.0;
+				Double NLRmeanG=0.0;
+				Double NLRmeanH=0.0;
+				Double NLRmeanI=0.0;
+				
+				Double SLRLmeanA=0.0;
+				Double SLRLmeanB=0.0;
+				Double SLRLmeanC=0.0;
+				Double SLRLmeanD=0.0;
+				Double SLRLmeanE=0.0;
+				Double SLRLmeanF=0.0;
+				Double SLRLmeanG=0.0;
+				Double SLRLmeanH=0.0;
+				Double SLRLmeanI=0.0;
+				
+				Double meanLRLmeanA=0.0;
+				Double meanLRLmeanB=0.0;
+				Double meanLRLmeanC=0.0;
+				Double meanLRLmeanD=0.0;
+				Double meanLRLmeanE=0.0;
+				Double meanLRLmeanF=0.0;
+				Double meanLRLmeanG=0.0;
+				Double meanLRLmeanH=0.0;
+				Double meanLRLmeanI=0.0;
+				
+				Double DLRZ1meanA=0.0;
+				Double DLRZ1meanB=0.0;
+				Double DLRZ1meanC=0.0;
+				Double DLRZ1meanD=0.0;
+				Double DLRZ1meanE=0.0;
+				Double DLRZ1meanF=0.0;
+				Double DLRZ1meanG=0.0;
+				Double DLRZ1meanH=0.0;
+				Double DLRZ1meanI=0.0;
+				
+				Double DLRZ2meanA=0.0;
+				Double DLRZ2meanB=0.0;
+				Double DLRZ2meanC=0.0;
+				Double DLRZ2meanD=0.0;
+				Double DLRZ2meanE=0.0;
+				Double DLRZ2meanF=0.0;
+				Double DLRZ2meanG=0.0;
+				Double DLRZ2meanH=0.0;
+				Double DLRZ2meanI=0.0;
+				
+				concentration = concentrationList.get(j).getName();
+				
+				for (int k = 0; k < accessionMeansList_A.size(); k++ ){
+					if (accessionMeansList_A.get(k).getName().equals(name)) {
+						if (accessionMeansList_A.get(k).getConcentration().equals(concentration)) {
+							nbOfPlantsA = accessionMeansList_A.get(k).getN();
+							LPRmeanA = LPRmeanA + accessionMeansList_A.get(k).getLPRmean()*nbOfPlantsA;
+							NLRmeanA = NLRmeanA + accessionMeansList_A.get(k).getNLRmean()*nbOfPlantsA;
+							SLRLmeanA = SLRLmeanA + accessionMeansList_A.get(k).getSLRLmean()*nbOfPlantsA;
+							meanLRLmeanA = meanLRLmeanA + accessionMeansList_A.get(k).getMeanLRLmean()*nbOfPlantsA;
+							DLRZ1meanA = DLRZ1meanA + accessionMeansList_A.get(k).getDLRZ1mean()*nbOfPlantsA;
+							DLRZ2meanA = DLRZ2meanA + accessionMeansList_A.get(k).getDLRZ2mean()*nbOfPlantsA;
+							
+							//Debug
+							System.out.println(name+" "+
+											   concentration+" "+
+											   nbOfPlantsA+" "+
+											   LPRmeanA+" "+
+											   NLRmeanA+" "+
+											   SLRLmeanA+" "+
+											   meanLRLmeanA+" "+
+											   DLRZ1meanA+" "+
+											   DLRZ2meanA);
+						}
+					}
+				}
+				
+				for (int k = 0; k < accessionMeansList_B.size(); k++ ){
+					if (accessionMeansList_B.get(k).getName().equals(name)) {
+						if (accessionMeansList_B.get(k).getConcentration().equals(concentration)) {
+							nbOfPlantsB = accessionMeansList_B.get(k).getN();
+							LPRmeanB = LPRmeanB + accessionMeansList_B.get(k).getLPRmean()*nbOfPlantsB;
+							NLRmeanB = NLRmeanB + accessionMeansList_B.get(k).getNLRmean()*nbOfPlantsB;
+							SLRLmeanB = SLRLmeanB + accessionMeansList_B.get(k).getSLRLmean()*nbOfPlantsB;
+							meanLRLmeanB = meanLRLmeanB + accessionMeansList_B.get(k).getMeanLRLmean()*nbOfPlantsB;
+							DLRZ1meanB = DLRZ1meanB + accessionMeansList_B.get(k).getDLRZ1mean()*nbOfPlantsB;
+							DLRZ2meanB = DLRZ2meanB + accessionMeansList_B.get(k).getDLRZ2mean()*nbOfPlantsB;
+							
+							//Debug
+							System.out.println(name+" "+
+											   concentration+" "+
+											   nbOfPlantsB+" "+
+											   LPRmeanB+" "+
+											   NLRmeanB+" "+
+											   SLRLmeanB+" "+
+											   meanLRLmeanB+" "+
+											   DLRZ1meanB+" "+
+											   DLRZ2meanB);
+						}
+					}
+				}
+				
+				for (int k = 0; k < accessionMeansList_C.size(); k++ ){
+					if (accessionMeansList_C.get(k).getName().equals(name)) {
+						if (accessionMeansList_C.get(k).getConcentration().equals(concentration)) {
+							nbOfPlantsC = accessionMeansList_C.get(k).getN();
+							LPRmeanC = LPRmeanC + accessionMeansList_C.get(k).getLPRmean()*nbOfPlantsC;
+							NLRmeanC = NLRmeanC + accessionMeansList_C.get(k).getNLRmean()*nbOfPlantsC;
+							SLRLmeanC = SLRLmeanC + accessionMeansList_C.get(k).getSLRLmean()*nbOfPlantsC;
+							meanLRLmeanC = meanLRLmeanC + accessionMeansList_C.get(k).getMeanLRLmean()*nbOfPlantsC;
+							DLRZ1meanC = DLRZ1meanC + accessionMeansList_C.get(k).getDLRZ1mean()*nbOfPlantsC;
+							DLRZ2meanC = DLRZ2meanC + accessionMeansList_C.get(k).getDLRZ2mean()*nbOfPlantsC;
+							
+							//Debug
+							System.out.println(name+" "+
+											   concentration+" "+
+											   nbOfPlantsC+" "+
+											   LPRmeanC+" "+
+											   NLRmeanC+" "+
+											   SLRLmeanC+" "+
+											   meanLRLmeanC+" "+
+											   DLRZ1meanC+" "+
+											   DLRZ2meanC);
+						}
+					}
+				}
+				
+				for (int k = 0; k < accessionMeansList_D.size(); k++ ){
+					if (accessionMeansList_D.get(k).getName().equals(name)) {
+						if (accessionMeansList_D.get(k).getConcentration().equals(concentration)) {
+							nbOfPlantsD = accessionMeansList_D.get(k).getN();
+							LPRmeanD = LPRmeanD + accessionMeansList_D.get(k).getLPRmean()*nbOfPlantsD;
+							NLRmeanD = NLRmeanD + accessionMeansList_D.get(k).getNLRmean()*nbOfPlantsD;
+							SLRLmeanD = SLRLmeanD + accessionMeansList_D.get(k).getSLRLmean()*nbOfPlantsD;
+							meanLRLmeanD = meanLRLmeanD + accessionMeansList_D.get(k).getMeanLRLmean()*nbOfPlantsD;
+							DLRZ1meanD = DLRZ1meanD + accessionMeansList_D.get(k).getDLRZ1mean()*nbOfPlantsD;
+							DLRZ2meanD = DLRZ2meanD + accessionMeansList_D.get(k).getDLRZ2mean()*nbOfPlantsD;
+							
+							//Debug
+							System.out.println(name+" "+
+											   concentration+" "+
+											   nbOfPlantsD+" "+
+											   LPRmeanD+" "+
+											   NLRmeanD+" "+
+											   SLRLmeanD+" "+
+											   meanLRLmeanD+" "+
+											   DLRZ1meanD+" "+
+											   DLRZ2meanD);
+						}
+					}
+				}
+				
+				for (int k = 0; k < accessionMeansList_E.size(); k++ ){
+					if (accessionMeansList_E.get(k).getName().equals(name)) {
+						if (accessionMeansList_E.get(k).getConcentration().equals(concentration)) {
+							nbOfPlantsE = accessionMeansList_E.get(k).getN();
+							LPRmeanE = LPRmeanE + accessionMeansList_E.get(k).getLPRmean()*nbOfPlantsE;
+							NLRmeanE = NLRmeanE + accessionMeansList_E.get(k).getNLRmean()*nbOfPlantsE;
+							SLRLmeanE = SLRLmeanE + accessionMeansList_E.get(k).getSLRLmean()*nbOfPlantsE;
+							meanLRLmeanE = meanLRLmeanE + accessionMeansList_E.get(k).getMeanLRLmean()*nbOfPlantsE;
+							DLRZ1meanE = DLRZ1meanE + accessionMeansList_E.get(k).getDLRZ1mean()*nbOfPlantsE;
+							DLRZ2meanE = DLRZ2meanE + accessionMeansList_E.get(k).getDLRZ2mean()*nbOfPlantsE;
+							
+							//Debug
+							System.out.println(name+" "+
+											   concentration+" "+
+											   nbOfPlantsE+" "+
+											   LPRmeanE+" "+
+											   NLRmeanE+" "+
+											   SLRLmeanE+" "+
+											   meanLRLmeanE+" "+
+											   DLRZ1meanE+" "+
+											   DLRZ2meanE);
+						}
+					}
+				}
+				
+				for (int k = 0; k < accessionMeansList_F.size(); k++ ){
+					if (accessionMeansList_F.get(k).getName().equals(name)) {
+						if (accessionMeansList_F.get(k).getConcentration().equals(concentration)) {
+							nbOfPlantsF = accessionMeansList_F.get(k).getN();
+							LPRmeanF = LPRmeanF + accessionMeansList_F.get(k).getLPRmean()*nbOfPlantsF;
+							NLRmeanF = NLRmeanF + accessionMeansList_F.get(k).getNLRmean()*nbOfPlantsF;
+							SLRLmeanF = SLRLmeanF + accessionMeansList_F.get(k).getSLRLmean()*nbOfPlantsF;
+							meanLRLmeanF = meanLRLmeanF + accessionMeansList_F.get(k).getMeanLRLmean()*nbOfPlantsF;
+							DLRZ1meanF = DLRZ1meanF + accessionMeansList_F.get(k).getDLRZ1mean()*nbOfPlantsF;
+							DLRZ2meanF = DLRZ2meanF + accessionMeansList_F.get(k).getDLRZ2mean()*nbOfPlantsF;
+							
+							//Debug
+							System.out.println(name+" "+
+											   concentration+" "+
+											   nbOfPlantsF+" "+
+											   LPRmeanF+" "+
+											   NLRmeanF+" "+
+											   SLRLmeanF+" "+
+											   meanLRLmeanF+" "+
+											   DLRZ1meanF+" "+
+											   DLRZ2meanF);
+						}
+					}
+				}
+				
+				for (int k = 0; k < accessionMeansList_G.size(); k++ ){
+					if (accessionMeansList_G.get(k).getName().equals(name)) {
+						if (accessionMeansList_G.get(k).getConcentration().equals(concentration)) {
+							nbOfPlantsG = accessionMeansList_G.get(k).getN();
+							LPRmeanG = LPRmeanG + accessionMeansList_G.get(k).getLPRmean()*nbOfPlantsG;
+							NLRmeanG = NLRmeanG + accessionMeansList_G.get(k).getNLRmean()*nbOfPlantsG;
+							SLRLmeanG = SLRLmeanG + accessionMeansList_G.get(k).getSLRLmean()*nbOfPlantsG;
+							meanLRLmeanG = meanLRLmeanG + accessionMeansList_G.get(k).getMeanLRLmean()*nbOfPlantsG;
+							DLRZ1meanG = DLRZ1meanG + accessionMeansList_G.get(k).getDLRZ1mean()*nbOfPlantsG;
+							DLRZ2meanG = DLRZ2meanG + accessionMeansList_G.get(k).getDLRZ2mean()*nbOfPlantsG;
+							
+							//Debug
+							System.out.println(name+" "+
+											   concentration+" "+
+											   nbOfPlantsG+" "+
+											   LPRmeanG+" "+
+											   NLRmeanG+" "+
+											   SLRLmeanG+" "+
+											   meanLRLmeanG+" "+
+											   DLRZ1meanG+" "+
+											   DLRZ2meanG);
+						}
+					}
+				}
+				
+				for (int k = 0; k < accessionMeansList_H.size(); k++ ){
+					if (accessionMeansList_H.get(k).getName().equals(name)) {
+						if (accessionMeansList_H.get(k).getConcentration().equals(concentration)) {
+							nbOfPlantsH = accessionMeansList_H.get(k).getN();
+							LPRmeanH = LPRmeanH + accessionMeansList_H.get(k).getLPRmean()*nbOfPlantsH;
+							NLRmeanH = NLRmeanH + accessionMeansList_H.get(k).getNLRmean()*nbOfPlantsH;
+							SLRLmeanH = SLRLmeanH + accessionMeansList_H.get(k).getSLRLmean()*nbOfPlantsH;
+							meanLRLmeanH = meanLRLmeanH + accessionMeansList_H.get(k).getMeanLRLmean()*nbOfPlantsH;
+							DLRZ1meanH = DLRZ1meanH + accessionMeansList_H.get(k).getDLRZ1mean()*nbOfPlantsH;
+							DLRZ2meanH = DLRZ2meanH + accessionMeansList_H.get(k).getDLRZ2mean()*nbOfPlantsH;
+							
+							//Debug
+							System.out.println(name+" "+
+											   concentration+" "+
+											   nbOfPlantsH+" "+
+											   LPRmeanH+" "+
+											   NLRmeanH+" "+
+											   SLRLmeanH+" "+
+											   meanLRLmeanH+" "+
+											   DLRZ1meanH+" "+
+											   DLRZ2meanH);
+						}
+					}
+				}
+				
+				for (int k = 0; k < accessionMeansList_I.size(); k++ ){
+					if (accessionMeansList_I.get(k).getName().equals(name)) {
+						if (accessionMeansList_I.get(k).getConcentration().equals(concentration)) {
+							nbOfPlantsI = accessionMeansList_I.get(k).getN();
+							LPRmeanI = LPRmeanI + accessionMeansList_I.get(k).getLPRmean()*nbOfPlantsI;
+							NLRmeanI = NLRmeanI + accessionMeansList_I.get(k).getNLRmean()*nbOfPlantsI;
+							SLRLmeanI = SLRLmeanI + accessionMeansList_I.get(k).getSLRLmean()*nbOfPlantsI;
+							meanLRLmeanI = meanLRLmeanI + accessionMeansList_I.get(k).getMeanLRLmean()*nbOfPlantsI;
+							DLRZ1meanI = DLRZ1meanI + accessionMeansList_I.get(k).getDLRZ1mean()*nbOfPlantsI;
+							DLRZ2meanI = DLRZ2meanI + accessionMeansList_I.get(k).getDLRZ2mean()*nbOfPlantsI;
+							
+							//Debug
+							System.out.println(name+" "+
+											   concentration+" "+
+											   nbOfPlantsI+" "+
+											   LPRmeanI+" "+
+											   NLRmeanI+" "+
+											   SLRLmeanI+" "+
+											   meanLRLmeanI+" "+
+											   DLRZ1meanI+" "+
+											   DLRZ2meanI);
+						}
+					}
+				}
+							
+				totalNbOfPlants = nbOfPlantsA + 
+								  nbOfPlantsB + 
+								  nbOfPlantsC +
+								  nbOfPlantsD +
+								  nbOfPlantsE +
+								  nbOfPlantsF +
+								  nbOfPlantsG +
+								  nbOfPlantsH +
+								  nbOfPlantsI;
+				
+				if (!(totalNbOfPlants==0)) {
+					LPRmean = (LPRmeanA+LPRmeanB+LPRmeanC+LPRmeanD+LPRmeanE+LPRmeanF+LPRmeanG+LPRmeanH+LPRmeanI)/totalNbOfPlants;
+					NLRmean = (NLRmeanA+NLRmeanB+NLRmeanC+NLRmeanD+NLRmeanE+NLRmeanF+NLRmeanG+NLRmeanH+NLRmeanI)/totalNbOfPlants;
+					SLRLmean = (SLRLmeanA+SLRLmeanB+SLRLmeanC+SLRLmeanD+SLRLmeanE+SLRLmeanF+SLRLmeanG+SLRLmeanH+SLRLmeanI)/totalNbOfPlants;
+					meanLRLmean = (meanLRLmeanA+meanLRLmeanB+meanLRLmeanC+meanLRLmeanD+meanLRLmeanE+meanLRLmeanF+meanLRLmeanG+meanLRLmeanH+meanLRLmeanI)/totalNbOfPlants;
+					DLRZ1mean = (DLRZ1meanA+DLRZ1meanB+DLRZ1meanC+DLRZ1meanD+DLRZ1meanE+DLRZ1meanF+DLRZ1meanG+DLRZ1meanH+DLRZ1meanI)/totalNbOfPlants;
+					DLRZ2mean = (DLRZ2meanA+DLRZ2meanB+DLRZ2meanC+DLRZ2meanD+DLRZ2meanE+DLRZ2meanF+DLRZ2meanG+DLRZ2meanH+DLRZ2meanI)/totalNbOfPlants;
+					
+					//Debug
+					System.out.println(name+" "+
+									   concentration+" "+
+									   totalNbOfPlants+" "+
+									   LPRmean+" "+
+									   NLRmean+" "+
+									   SLRLmean+" "+
+									   meanLRLmean+" "+
+									   DLRZ1mean+" "+
+									   DLRZ2mean);
+					
+					AccessionMeans finalAccessionMeans = new AccessionMeans();
+
+					finalAccessionMeans.setName(name);
+					finalAccessionMeans.setConcentration(concentration);
+					finalAccessionMeans.setLPRmean(LPRmean);
+					finalAccessionMeans.setNLRmean(NLRmean);
+					finalAccessionMeans.setSLRLmean(SLRLmean);
+					finalAccessionMeans.setMeanLRLmean(meanLRLmean);
+					finalAccessionMeans.setDLRZ1mean(DLRZ1mean);
+					finalAccessionMeans.setDLRZ2mean(DLRZ2mean);
+					
+					finalAccessionMeansList.add(finalAccessionMeans);				
+				
+				}
+			}
+		}
+		
+		// Debug
+		System.out.println(finalAccessionMeansList.size());
+	    for (int l = 0; l < finalAccessionMeansList.size(); l++ ){
+	    	System.out.println(finalAccessionMeansList.get(l).getName()+" "+
+	    			finalAccessionMeansList.get(l).getConcentration());
+	    }
+	    
+	    // Write the file
+	    FileWriter f1 = new FileWriter(outputfilename);
+		String source="";
+		String currentName="";
+		String currentConcentration="";
+		Double currentLPRmean=0.0;
+		Double currentNLRmean=0.0;
+		Double currentSLRLmean=0.0;
+		Double currentMeanLRLmean=0.0;
+		Double currentDLRZ1mean=0.0;
+		Double currentDLRZ2mean=0.0;
+		
+	    for (int l = 0; l < finalAccessionMeansList.size(); l++ ){
+	    	currentName = finalAccessionMeansList.get(l).getName();
+	    	currentConcentration = finalAccessionMeansList.get(l).getConcentration();
+	    	currentLPRmean = finalAccessionMeansList.get(l).getLPRmean();
+	    	currentNLRmean = finalAccessionMeansList.get(l).getNLRmean();
+	    	currentSLRLmean = finalAccessionMeansList.get(l).getSLRLmean();
+	    	currentMeanLRLmean = finalAccessionMeansList.get(l).getMeanLRLmean();
+	    	currentDLRZ1mean = finalAccessionMeansList.get(l).getDLRZ1mean();
+	    	currentDLRZ2mean = finalAccessionMeansList.get(l).getDLRZ2mean();
+	    	
+	    	source = currentName+";"+
+	    			 currentConcentration+";"+
+					 roundDouble(currentLPRmean,"#.##")+";"+
+					 roundDouble(currentNLRmean,"#.##")+";"+
+					 roundDouble(currentSLRLmean,"#.##")+";"+
+					 roundDouble(currentMeanLRLmean,"#.##")+";"+
+					 roundDouble(currentDLRZ1mean,"#.##")+";"+
+					 roundDouble(currentDLRZ2mean,"#.##")+"\r\n";
+
+			// Debug
+		    System.out.println(currentName+";"+
+	    			 currentConcentration+";"+
+					 roundDouble(currentLPRmean,"#.##")+";"+
+					 roundDouble(currentNLRmean,"#.##")+";"+
+					 roundDouble(currentSLRLmean,"#.##")+";"+
+					 roundDouble(currentMeanLRLmean,"#.##")+";"+
+					 roundDouble(currentDLRZ1mean,"#.##")+";"+
+					 roundDouble(currentDLRZ2mean,"#.##"));
+			
+			String newSource = source.replace(".", ",");
+			f1.write(newSource);
+	    }
+
+//		//Debug
+//    	System.out.println(accessionSummaryList_A.size());
+//    	System.out.println(accessionSummaryList_B.size());
+//    	System.out.println(accessionSummaryList_C.size());
+    	
+		f1.close();
+	}	
+	
+	//------------------------------------------------------------------------------------------------------------------
+	private static List<AccessionMeans> getAccessionMeansList(File infile){
+		
+		FileInputStream fis = null;
+		BufferedInputStream bis = null;
+		DataInputStream dis = null;
+		
+		// variables to store the data
+		String accession;
+		String concentration;
+		String box;
+		int nbofplants;
+		Double LPRmean=0.0;
+		Double NLRmean=0.0;
+		Double SLRLmean=0.0;
+		Double meanLRLmean=0.0;
+		Double DLRZ1mean=0.0;
+		Double DLRZ2mean=0.0;
+		
+		List<AccessionMeans> myAccessionMeansList = new ArrayList<AccessionMeans>();
+		
+		try {
+			fis = new FileInputStream(infile);
+		    bis = new BufferedInputStream(fis);
+		    dis = new DataInputStream(bis);
+		    
+		    while (dis.available() != 0) {
+		    	   	
+		    	String line = dis.readLine();
+		    	
+		    	accession = getStringLineItem(line,0,";");
+		    	concentration = getStringLineItem(line,1,";");
+		    	nbofplants = getIntegerLineItem(line,2,";");
+		    	box = getStringLineItem(line,3,";");
+		    	LPRmean = getDoubleLineItem(line,4,";");
+		    	NLRmean = getDoubleLineItem(line,5,";");
+		    	SLRLmean = getDoubleLineItem(line,6,";");
+		    	meanLRLmean = getDoubleLineItem(line,7,";");
+		    	DLRZ1mean = getDoubleLineItem(line,8,";");
+		    	DLRZ2mean = getDoubleLineItem(line,9,";");
+		    	
+		    	AccessionMeans myAccessionMeans = new AccessionMeans();
+		    	
+		    	myAccessionMeans.setName(accession);
+		    	myAccessionMeans.setConcentration(concentration);
+		    	myAccessionMeans.setBox(box);
+		    	myAccessionMeans.setN(nbofplants);
+		    	myAccessionMeans.setLPRmean(LPRmean);
+		    	myAccessionMeans.setNLRmean(NLRmean);
+		    	myAccessionMeans.setSLRLmean(SLRLmean);
+		    	myAccessionMeans.setMeanLRLmean(meanLRLmean);
+		    	myAccessionMeans.setDLRZ1mean(DLRZ1mean);
+		    	myAccessionMeans.setDLRZ2mean(DLRZ2mean);
+		    	
+		    	myAccessionMeansList.add(myAccessionMeans);	 
+		    }
+		    
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+
+		return myAccessionMeansList;
+	}	
+	
 	//------------------------------------------------------------------------------------------------------------------
 	private static void writeTempFile1(String outputfilename,List<Accession> accessionlist) throws IOException{	
 
@@ -168,7 +1028,7 @@ public class Analysis {
 				sheet.addCell(new Label(7, 0, "Mean LRL   ", headerInformationFormat));
 				sheet.addCell(new Label(8, 0, "DLRZ1", headerInformationFormat));
 				sheet.addCell(new Label(9, 0, "DLRZ2", headerInformationFormat));
-				sheet.addCell(new Label(10, 0, "Length Z2", headerInformationFormat));
+				sheet.addCell(new Label(10, 0, "Z2 Length", headerInformationFormat));
 			} catch (RowsExceededException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -361,22 +1221,22 @@ public class Analysis {
 				sheet.addCell(new Label(2,j+1, accessionsList.get(j).getBox(), InformationFormat));
 				sheet.addCell(new Number(3,j+1,accessionsList.get(j).getN(),intg ));
 				sheet.addCell(new Number(4,j+1,accessionsList.get(j).getLPRmean(),cf2 ));
-				sheet.addCell(new Label(5,j+1, "±", InformationFormat));
+				sheet.addCell(new Label(5,j+1, " ± ", InformationFormat));
 				sheet.addCell(new Number(6,j+1,accessionsList.get(j).getLPRse(),cf2 ));
 				sheet.addCell(new Number(7,j+1,accessionsList.get(j).getNLRmean(),cf2 ));
-				sheet.addCell(new Label(8,j+1, "±", InformationFormat));
+				sheet.addCell(new Label(8,j+1, " ± ", InformationFormat));
 				sheet.addCell(new Number(9,j+1,accessionsList.get(j).getNLRse(),cf2 ));
 				sheet.addCell(new Number(10,j+1,accessionsList.get(j).getSLRLmean(),cf2 ));
-				sheet.addCell(new Label(11,j+1, "±", InformationFormat));
+				sheet.addCell(new Label(11,j+1, " ± ", InformationFormat));
 				sheet.addCell(new Number(12,j+1,accessionsList.get(j).getSLRLse(),cf2 ));
 				sheet.addCell(new Number(13,j+1,accessionsList.get(j).getMeanLRLmean(),cf2 ));
-				sheet.addCell(new Label(14,j+1, "±", InformationFormat));
+				sheet.addCell(new Label(14,j+1, " ± ", InformationFormat));
 				sheet.addCell(new Number(15,j+1,accessionsList.get(j).getMeanLRLse(),cf2 ));
 				sheet.addCell(new Number(16,j+1,accessionsList.get(j).getDLRZ1mean(),cf2 ));
-				sheet.addCell(new Label(17,j+1, "±", InformationFormat));
+				sheet.addCell(new Label(17,j+1, " ± ", InformationFormat));
 				sheet.addCell(new Number(18,j+1,accessionsList.get(j).getDLRZ1se(),cf2 ));
 				sheet.addCell(new Number(19,j+1,accessionsList.get(j).getDLRZ2mean(),cf2 ));
-				sheet.addCell(new Label(20,j+1, "±", InformationFormat));
+				sheet.addCell(new Label(20,j+1, " ± ", InformationFormat));
 				sheet.addCell(new Number(21,j+1,accessionsList.get(j).getDLRZ2se(),cf2 ));
 			}
 			
