@@ -122,9 +122,9 @@ public class Analysis {
 			}
 		}
 			
-		for (int j = 0; j < myAccessionNamesList.size(); j++ ){
-			System.out.println(myAccessionNamesList.get(j).getName());
-		}
+//		for (int j = 0; j < myAccessionNamesList.size(); j++ ){
+//			System.out.println(myAccessionNamesList.get(j).getName());
+//		}
 			
 		FileWriter f1 = new FileWriter(outputfilename);
 		String source="";
@@ -166,16 +166,16 @@ public class Analysis {
 		// Write first line with the columns titles
 		source = "Accession"+";"+
 				 "LPR (Low)"+";"+
-				 "NLR (Low)"+";"+
-				 "SLRL (Low)"+";"+
-				 "Mean LRL (Low)"+";"+
-				 "Density LR Z1 (Low)"+";"+
-				 "Density LR Z2 (Low)"+";"+
 				 "LPR (High)"+";"+
+				 "NLR (Low)"+";"+
 				 "NLR (High)"+";"+
+				 "SLRL (Low)"+";"+
 				 "SLRL (High)"+";"+
+				 "Mean LRL (Low)"+";"+
 				 "Mean LRL (High)"+";"+
-				 "Density LR Z1 (High)"+";"+		 
+				 "Density LR Z1 (Low)"+";"+
+				 "Density LR Z1 (High)"+";"+
+				 "Density LR Z2 (Low)"+";"+
 				 "Density LR Z2 (High)"+"\r\n";	
 		
 		f1.write(source);
@@ -184,16 +184,16 @@ public class Analysis {
 			
 			source = toSaveAccessionHighsLowsList.get(j).getName()+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getLPRmeanlow(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getLPRmeanhigh(),"#.##")+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getNLRmeanlow(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getNLRmeanhigh(),"#.##")+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getSLRLmeanlow(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getSLRLmeanhigh(),"#.##")+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getMeanLRLmeanlow(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getMeanLRLmeanhigh(),"#.##")+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ1meanlow(),"#.##")+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ2meanlow(),"#.##")+";"+
-					 roundDouble(toSaveAccessionHighsLowsList.get(j).getLPRmeanhigh(),"#.##")+";"+
-					 roundDouble(toSaveAccessionHighsLowsList.get(j).getNLRmeanhigh(),"#.##")+";"+
-					 roundDouble(toSaveAccessionHighsLowsList.get(j).getSLRLmeanhigh(),"#.##")+";"+
-					 roundDouble(toSaveAccessionHighsLowsList.get(j).getMeanLRLmeanhigh(),"#.##")+";"+
-					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ1meanhigh(),"#.##")+";"+					 
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ1meanhigh(),"#.##")+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ2meanhigh(),"#.##")+"\r\n";
 
 			// Just to make sure the numbers are OK for Excel
@@ -202,6 +202,12 @@ public class Analysis {
 		}
 
 		f1.close();
+		
+		
+		
+		
+		
+		
 	}	
 	
 	//------------------------------------------------------------------------------------------------------------------
@@ -466,15 +472,15 @@ public class Analysis {
 		}	
 		
 		//Debug
-		System.out.println(accessionMeansList_A.size()+" "+
-				accessionMeansList_B.size()+" "+
-				accessionMeansList_C.size()+" "+
-				accessionMeansList_D.size()+" "+
-				accessionMeansList_E.size()+" "+
-				accessionMeansList_F.size()+" "+
-				accessionMeansList_G.size()+" "+
-				accessionMeansList_H.size()+" "+
-				accessionMeansList_I.size());
+//		System.out.println(accessionMeansList_A.size()+" "+
+//				accessionMeansList_B.size()+" "+
+//				accessionMeansList_C.size()+" "+
+//				accessionMeansList_D.size()+" "+
+//				accessionMeansList_E.size()+" "+
+//				accessionMeansList_F.size()+" "+
+//				accessionMeansList_G.size()+" "+
+//				accessionMeansList_H.size()+" "+
+//				accessionMeansList_I.size());
 		
 		
 		// Loop in the unique accessions names, and by concentration combine the data ------------------------------------
@@ -482,6 +488,7 @@ public class Analysis {
 		for (int i = 0; i < accessionNamesList.size(); i++ ){
 		
 			name = accessionNamesList.get(i).getName();
+			
 			for (int j = 0; j < concentrationList.size(); j++ ){
 				
 				int totalNbOfPlants=0;
@@ -792,6 +799,8 @@ public class Analysis {
 								  nbOfPlantsH +
 								  nbOfPlantsI;
 				
+				System.out.println(totalNbOfPlants);
+				
 				if (!(totalNbOfPlants==0)) {
 					LPRmean = (LPRmeanA+LPRmeanB+LPRmeanC+LPRmeanD+LPRmeanE+LPRmeanF+LPRmeanG+LPRmeanH+LPRmeanI)/totalNbOfPlants;
 					NLRmean = (NLRmeanA+NLRmeanB+NLRmeanC+NLRmeanD+NLRmeanE+NLRmeanF+NLRmeanG+NLRmeanH+NLRmeanI)/totalNbOfPlants;
@@ -829,11 +838,11 @@ public class Analysis {
 		}
 		
 		// Debug
-		System.out.println(finalAccessionMeansList.size());
-	    for (int l = 0; l < finalAccessionMeansList.size(); l++ ){
-	    	System.out.println(finalAccessionMeansList.get(l).getName()+" "+
-	    			finalAccessionMeansList.get(l).getConcentration());
-	    }
+//		System.out.println(finalAccessionMeansList.size());
+//	    for (int l = 0; l < finalAccessionMeansList.size(); l++ ){
+//	    	System.out.println(finalAccessionMeansList.get(l).getName()+" "+
+//	    			finalAccessionMeansList.get(l).getConcentration());
+//	    }
 	    
 	    // Write the file
 	    FileWriter f1 = new FileWriter(outputfilename);
