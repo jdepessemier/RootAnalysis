@@ -76,35 +76,168 @@ public class Analysis {
 		    }		    
 			
 		    // Write file Accession.xls
-		    String outFileName = finalDir+"Accessions.xls";	    
-		    writeAccessionsFile(outFileName,accessionsList);
+		    String outFileName1 = finalDir+"1_Accessions.xls";	    
+		    writeAccessionsFile(outFileName1,accessionsList);
 		    
 		    // Write file AccessionsStatistics.xls
-		    outFileName = finalDir+"AccessionsStatistics_1.xls";
-		    writeAccessionsStatistics01File(outFileName,accessionsList);
+		    String outFileName2 = finalDir+"2_AccessionsStatistics1.xls";
+		    writeAccessionsStatistics01File(outFileName2,accessionsList);
 		    
 		    // Write file AccessionsStatistics.xls
-		    outFileName = finalDir+"AccessionsStatistics_2.xls";
-		    writeAccessionsStatistics02File(outFileName,accessionsList);
+		    String outFileName3 = finalDir+"3_AccessionsStatistics2.xls";
+		    writeAccessionsStatistics02File(outFileName3,accessionsList);
 		    
 		    // Write file AccessionsHighLow.xls
-		    outFileName = finalDir+"AccessionsTempFile01.csv";
-		    writeTempFile1(outFileName,accessionsList);		
+		    String outFileName4 = finalDir+"4_AccessionsTempFile01.csv";
+		    writeTempFile1(outFileName4,accessionsList);		
 		    
-		    File inFile1 = new File(finalDir+"AccessionsTempFile01.csv");
+		    File inFile1 = new File(finalDir+"4_AccessionsTempFile01.csv");
 		    List<AccessionMeans> accessionMeansList = new ArrayList<AccessionMeans>();
 		    accessionMeansList = getAccessionMeansList(inFile1);	    
-		    outFileName = finalDir+"AccessionsTempFile02.csv";
-		    writeTempFile2(outFileName,accessionMeansList);
+		    String outFileName5 = finalDir+"5_AccessionsTempFile02.csv";
+		    writeTempFile2(outFileName5,accessionMeansList);
 		   
-		    File inFile2 = new File(finalDir+"AccessionsTempFile02.csv");
+		    File inFile2 = new File(finalDir+"5_AccessionsTempFile02.csv");
 		    List<AccessionMeans> globalAccessionMeans = new ArrayList<AccessionMeans>();	    
 		    globalAccessionMeans = getGlobalAccessionMeansList(inFile2);    
-		    outFileName = finalDir+"AccessionsHighsLows.csv";
-		    writeAccessionHighsLowsFile(outFileName,globalAccessionMeans);
+		    String outFileName6 = finalDir+"6_AccessionsHighsLows.csv";
+		    writeAccessionHighsLowsFile(outFileName6,globalAccessionMeans);
+		    
+		    File inFile3 = new File(finalDir+"6_AccessionsHighsLows.csv");
+		    String outFileName7 = finalDir+"7_AccessionsHighsLows.xls";
+		    writeAccessionHighsLowsXLSFile(inFile3,outFileName7);
+		    
 		}				
 	}
 
+	//------------------------------------------------------------------------------------------------------------------
+	private static void writeAccessionHighsLowsXLSFile(File inFile,String outFileName) throws IOException{
+		
+		FileInputStream fis = null;
+		BufferedInputStream bis = null;
+		DataInputStream dis = null;
+		
+		// variables to store the data
+		String accession;
+		Double LPRmeanlow=0.0;
+		Double NLRmeanlow=0.0;
+		Double SLRLmeanlow=0.0;
+		Double meanLRLmeanlow=0.0;
+		Double DLRZ1meanlow=0.0;
+		Double DLRZ2meanlow=0.0;
+		Double LPRmeanhigh=0.0;
+		Double NLRmeanhigh=0.0;
+		Double SLRLmeanhigh=0.0;
+		Double meanLRLmeanhigh=0.0;
+		Double DLRZ1meanhigh=0.0;
+		Double DLRZ2meanhigh=0.0;
+		
+		WritableWorkbook workbook = Workbook.createWorkbook(new File(outFileName));
+		WritableSheet sheet = workbook.createSheet("Accessions Highs Lows", 0);
+		WritableFont headerInformationFont = new WritableFont(WritableFont.createFont("CALIBRI"), 10, WritableFont.BOLD);
+		WritableCellFormat headerInformationFormat = new WritableCellFormat(headerInformationFont);
+		WritableFont InformationFont = new WritableFont(WritableFont.createFont("CALIBRI"), 10, WritableFont.NO_BOLD);
+		WritableCellFormat InformationFormat = new WritableCellFormat(InformationFont);
+		WritableCellFormat cf2 = new WritableCellFormat(InformationFont,NumberFormats.FLOAT);
+		WritableCellFormat intg = new WritableCellFormat (InformationFont, NumberFormats.INTEGER);
+		
+		try {
+			sheet.addCell(new Label(0, 0, "Accession", headerInformationFormat));
+			sheet.addCell(new Label(1, 0, "LPR (Low)", headerInformationFormat));
+			sheet.addCell(new Label(2, 0, "LPR (High)", headerInformationFormat));
+			sheet.addCell(new Label(3, 0, "NLR (Low)", headerInformationFormat));
+			sheet.addCell(new Label(4, 0, "NLR (High)", headerInformationFormat));
+			sheet.addCell(new Label(5, 0, "SLRL (Low)", headerInformationFormat));		
+			sheet.addCell(new Label(6, 0, "SLRL (High)", headerInformationFormat));
+			sheet.addCell(new Label(7, 0, "Mean LRL (Low)", headerInformationFormat));
+			sheet.addCell(new Label(8, 0, "Mean LRL (High)", headerInformationFormat));
+			sheet.addCell(new Label(9, 0, "DLRZ1 (Low)", headerInformationFormat));
+			sheet.addCell(new Label(10, 0, "DLRZ1 (High)", headerInformationFormat));
+			sheet.addCell(new Label(11, 0, "DLRZ2 (Low)", headerInformationFormat));
+			sheet.addCell(new Label(12, 0, "DLRZ2 (High)", headerInformationFormat));
+		} catch (RowsExceededException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WriteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				
+		try {
+			fis = new FileInputStream(inFile);
+		    bis = new BufferedInputStream(fis);
+		    dis = new DataInputStream(bis);
+		    
+		    String line = dis.readLine();
+		    int l = 1;
+		    
+		    while (dis.available() != 0) {
+		    	   	
+		    	line = dis.readLine();
+		    	
+		    	accession = getStringLineItem(line,0,";");
+		    	LPRmeanlow = getDoubleLineItem(line,1,";");
+		    	LPRmeanhigh = getDoubleLineItem(line,2,";");
+		    	NLRmeanlow = getDoubleLineItem(line,3,";");
+		    	NLRmeanhigh = getDoubleLineItem(line,4,";");
+		    	SLRLmeanlow = getDoubleLineItem(line,5,";");
+		    	SLRLmeanhigh = getDoubleLineItem(line,6,";");
+		    	meanLRLmeanlow = getDoubleLineItem(line,7,";");
+		    	meanLRLmeanhigh = getDoubleLineItem(line,8,";");
+		    	DLRZ1meanlow = getDoubleLineItem(line,9,";");
+		    	DLRZ1meanhigh = getDoubleLineItem(line,10,";");
+		    	DLRZ2meanlow = getDoubleLineItem(line,11,";");
+		    	DLRZ2meanhigh = getDoubleLineItem(line,12,";");	
+
+				try {
+					sheet.addCell(new Label(0,l,accession,InformationFormat));
+					sheet.addCell(new Number(1,l,LPRmeanlow,cf2));
+					sheet.addCell(new Number(2,l,LPRmeanhigh,cf2));
+					sheet.addCell(new Number(3,l,NLRmeanlow,cf2));
+					sheet.addCell(new Number(4,l,NLRmeanhigh,cf2));
+					sheet.addCell(new Number(5,l,SLRLmeanlow,cf2));
+					sheet.addCell(new Number(6,l,SLRLmeanhigh,cf2));
+					sheet.addCell(new Number(7,l,meanLRLmeanlow,cf2));
+					sheet.addCell(new Number(8,l,meanLRLmeanhigh,cf2));	
+					sheet.addCell(new Number(9,l,DLRZ1meanlow,cf2));
+					sheet.addCell(new Number(10,l,DLRZ1meanhigh,cf2));
+					sheet.addCell(new Number(11,l,DLRZ2meanlow,cf2));
+					sheet.addCell(new Number(12,l,DLRZ2meanhigh,cf2));
+				} catch (RowsExceededException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (WriteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+		    	l=l+1;
+		    }
+		    
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		int c = sheet.getColumns();
+		for(int x=0;x<c;x++)
+		{
+		    CellView cell = sheet.getColumnView(x);
+		    cell.setAutosize(true);
+		    sheet.setColumnView(x, cell);
+		}	
+		workbook.write();
+		try {
+			workbook.close();
+		} catch (WriteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+	}
+
+	
 	//------------------------------------------------------------------------------------------------------------------
 	private static void writeAccessionHighsLowsFile(String outputfilename,List<AccessionMeans> globalAccessionMeans) throws IOException{
 		
