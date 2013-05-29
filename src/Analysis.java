@@ -29,7 +29,7 @@ public class Analysis {
 		// Setup the minimal lateral roots length, below this value we do not consider the lateral or secondary roots
 		
 		String root = "C:";
-		String workDir = "W_2012_03_22-08";
+		String workDir = "W_2013_05_28";
 		Double minLateralRootLength = 0.1;
 		
 		// Setup the working directories inside the main directory
@@ -1643,7 +1643,11 @@ public class Analysis {
 				    //System.out.println(roundDouble(densityOfLateralRootsZ1[i]));
 				    
 				    // Save the length between first and last lateral roots positions
-				    currentAccession.setP1_Plast(rootDeltaLength, i);
+				    if (nbOfLateralRoots[i] == 0) {
+				    	currentAccession.setP1_Plast(lengthOfPrimaryRoot[i],i);
+				    } else {
+				    	currentAccession.setP1_Plast(rootDeltaLength, i);
+				    }
 				    
 				    // Save the density of lateral roots (Zone2)
 				    //System.out.println(nbOfLateralRoots[i]);
