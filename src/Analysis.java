@@ -29,7 +29,7 @@ public class Analysis {
 		// Setup the minimal lateral roots length, below this value we do not consider the lateral or secondary roots
 		
 		String root = "C:";
-		String workDir = "W_2013_05_28";
+		String workDir = "W_2012_03_22-08";
 		Double minLateralRootLength = 0.1;
 		
 		// Setup the working directories inside the main directory
