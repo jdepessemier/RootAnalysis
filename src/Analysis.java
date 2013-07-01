@@ -588,8 +588,8 @@ public class Analysis {
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getMeanLRLmeanlow(),"#.##")+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getMeanLRLmeanhigh(),"#.##")+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ1meanlow(),"#.##")+";"+
-					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ2meanlow(),"#.##")+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ1meanhigh(),"#.##")+";"+
+					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ2meanlow(),"#.##")+";"+
 					 roundDouble(toSaveAccessionHighsLowsList.get(j).getDLRZ2meanhigh(),"#.##")+"\r\n";
 
 			// Just to make sure the numbers are OK for Excel
@@ -650,7 +650,7 @@ public class Analysis {
 		    	myAccessionMeans.setLPRmean(LPRmean);
 		    	myAccessionMeans.setNLRmean(NLRmean);
 		    	myAccessionMeans.setSLRLmean(SLRLmean);
-		    	myAccessionMeans.setMeanLRLmean(SLRLmean);
+		    	myAccessionMeans.setMeanLRLmean(meanLRLmean);
 		    	myAccessionMeans.setDLRZ1mean(DLRZ1mean);
 		    	myAccessionMeans.setDLRZ2mean(DLRZ2mean);
 		    	
