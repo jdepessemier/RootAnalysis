@@ -29,7 +29,7 @@ public class Analysis {
 		// Setup the minimal lateral roots length, below this value we do not consider the lateral or secondary roots
 		
 		String root = "C:";
-		String workDir = "W_2012_03_22-08";
+		String workDir = "W_2013_03_17";
 		Double minLateralRootLength = 0.1;
 		
 		// Setup the working directories inside the main directory
@@ -95,21 +95,21 @@ public class Analysis {
 		    myAccessionGlobalMeans = getGlobalMeans("10µM",accessionsList);
 		    accessionsGlobalMeansList.add(myAccessionGlobalMeans);
 		    
-		    // Get corrected Accessions
-		    List<CorrectedAccession> correctedAccessionsList = new ArrayList<CorrectedAccession>();
-		    correctedAccessionsList = getCorrectedAccessionsList(accessionsGlobalMeansList,accessionsList);
-		    
-		    // Write file CorrectedAccession.xls
-		    String outFileName10 = finalDir+"4_CorrectedAccessions.xls";	    
-		    writeCorrectedAccessionsFile(outFileName10,correctedAccessionsList);
-		    
-		    // Write file CorrectedAccessionsStatistics.xls
-		    String outFileName20 = finalDir+"5_CorrectedAccessionsStatistics1.xls";
-		    writeCorrectedAccessionsStatistics01File(outFileName20,correctedAccessionsList);
-		    
-		    // Write file CorrectedAccessionsStatistics.xls
-		    String outFileName30 = finalDir+"6_CorrectedAccessionsStatistics2.xls";
-		    writeCorrectedAccessionsStatistics02File(outFileName30,correctedAccessionsList);		      
+//		    // Get corrected Accessions
+//		    List<CorrectedAccession> correctedAccessionsList = new ArrayList<CorrectedAccession>();
+//		    correctedAccessionsList = getCorrectedAccessionsList(accessionsGlobalMeansList,accessionsList);
+//		    
+//		    // Write file CorrectedAccession.xls
+//		    String outFileName10 = finalDir+"4_CorrectedAccessions.xls";	    
+//		    writeCorrectedAccessionsFile(outFileName10,correctedAccessionsList);
+//		    
+//		    // Write file CorrectedAccessionsStatistics.xls
+//		    String outFileName20 = finalDir+"5_CorrectedAccessionsStatistics1.xls";
+//		    writeCorrectedAccessionsStatistics01File(outFileName20,correctedAccessionsList);
+//		    
+//		    // Write file CorrectedAccessionsStatistics.xls
+//		    String outFileName30 = finalDir+"6_CorrectedAccessionsStatistics2.xls";
+//		    writeCorrectedAccessionsStatistics02File(outFileName30,correctedAccessionsList);		      
 		    
 		    // Write file AccessionsHighLow.xls
 		    String outFileName4 = finalDir+"7_AccessionsTempFile01.csv";
